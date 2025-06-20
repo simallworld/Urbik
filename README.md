@@ -1,5 +1,4 @@
-# Urbik
-
+# Urbik (main)
 ## 🚴‍♂️This project is a Fullstack Bike Ride Booking App with features like ride scheduling, real-time tracking, payment, authentication, etc.
 
 ### 💼 1. Professional & Startup-Ready
