@@ -1,3 +1,6 @@
+#Backend
+.env
+node_modules
 # Logs
 logs
 *.log
