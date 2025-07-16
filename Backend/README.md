@@ -229,3 +229,100 @@ Authorization: Bearer <jwt_token>
 
 - Must include a valid JWT token in the request header or as a cookie.
 - Clears the authentication cookie and blacklists the token to prevent reuse.
+
+---
+
+## Captain Endpoints
+
+### Endpoint
+
+`POST /captains/register`
+
+### Description
+
+Registers a new captain in the system. The endpoint expects captain details, including vehicle information, in the request body. It validates the input, hashes the password, creates the captain, and returns an authentication token along with the captain data.
+
+### Request Body
+
+Send a JSON object with the following structure:
+
+```
+{
+  "fullName": {
+    "firstName": "string (min 3 chars, required)",
+    "lastName": "string (min 3 chars, optional)"
+  },
+  "email": "string (valid email, required)",
+  "password": "string (min 6 chars, required)",
+  "vehicle": {
+    "color": "string (min 3 chars, required)",
+    "plate": "string (min 3 chars, required)",
+    "capacity": "number (min 1, required)",
+    "vehicleType": "string (car|bike|auto|e-rikshaw, required)"
+  }
+}
+```
+
+#### Example
+
+```
+{
+  "fullName": {
+    "firstName": "Alice",
+    "lastName": "Smith"
+  },
+  "email": "alice.smith@example.com",
+  "password": "securepass",
+  "vehicle": {
+    "color": "Red",
+    "plate": "XYZ123",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}
+```
+
+### Responses
+
+- **201 Created**
+
+  - Captain registered successfully.
+  - Response body:
+    ```
+    {
+      "token": "<jwt_token>",
+      "captain": {
+        "_id": "captain_id",
+        "fullName": {
+          "firstName": "Alice",
+          "lastName": "Smith"
+        },
+        "email": "alice.smith@example.com",
+        "vehicle": {
+          "color": "Red",
+          "plate": "XYZ123",
+          "capacity": 4,
+          "vehicleType": "car"
+        },
+        ...otherCaptainFields
+      }
+    }
+    ```
+
+- **400 Bad Request**
+  - Validation failed or captain already exists.
+    ```
+    {
+      "errors": [
+        { "msg": "Error message", ... }
+      ]
+      // or
+      "message": "Captain already exist"
+    }
+    ```
+
+## Notes
+
+- All required fields must be provided and valid.
+- The password is securely hashed before storage.
+- The response includes a JWT token for authentication.
