@@ -1,20 +1,19 @@
-import useModel from "../models/user.model";
+import userModel from "../models/user.model.js";
 
 // Used to create user-
-module.exports.createUser = async ({
-  firstName,
-  lastName,
-  email,
-  password,
-}) => {
+async function createUser({ firstName, lastName, email, password }) {
   if (!firstName || !email || !password) {
     throw new Error("All fields are required");
   }
-  const user = userModel.create({
+  const user = await userModel.create({
     fullName: { firstName, lastName },
     email,
     password,
   });
 
   return user;
+}
+
+export default {
+  createUser,
 };
