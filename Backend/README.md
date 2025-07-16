@@ -64,3 +64,70 @@ Send a JSON object with the following structure:
 - All required fields must be provided and valid.
 - The password is securely hashed before storage.
 - The response includes a JWT token for authentication.
+
+---
+
+## Endpoint
+
+`POST /users/login`
+
+## Description
+
+Authenticates an existing user. The endpoint checks the provided credentials, and if valid, returns an authentication token and user data.
+
+## Request Body
+
+Send a JSON object with the following structure:
+
+```
+{
+  "email": "string (valid email, required)",
+  "password": "string (min 6 chars, required)"
+}
+```
+
+### Example
+
+```
+{
+  "email": "john.doe@example.com",
+  "password": "password123"
+}
+```
+
+## Responses
+
+- **200 OK**
+
+  - Login successful.
+  - Response body:
+    ```
+    {
+      "token": "<jwt_token>",
+      "user": { ...userObject }
+    }
+    ```
+
+- **400 Bad Request**
+
+  - Validation failed. Response contains an array of error messages.
+    ```
+    {
+      "errors": [
+        { "msg": "Error message", ... }
+      ]
+    }
+    ```
+
+- **401 Unauthorized**
+  - Invalid email or password.
+    ```
+    {
+      "message": "Invalid email or password"
+    }
+    ```
+
+## Notes
+
+- Both fields are required and must be valid.
+- Returns a JWT token for authentication on successful login.

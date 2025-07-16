@@ -4,6 +4,7 @@ import userController from "../controllers/user.contoller.js";
 
 const router = express.Router();
 
+//Register route
 router.post(
   "/register",
   [
@@ -17,5 +18,14 @@ router.post(
   ],
   userController.registerUser
 );
+
+//Login route
+router.post("/login", [
+  body('email').isEmail().withMessage('Invalid Email'),
+  body('password').isLength({min: 6}).withMessage('Password required')
+],
+  userController.loginUser
+
+)
 
 export default router;
