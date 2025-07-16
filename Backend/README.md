@@ -131,3 +131,101 @@ Send a JSON object with the following structure:
 
 - Both fields are required and must be valid.
 - Returns a JWT token for authentication on successful login.
+
+---
+
+## Endpoint
+
+`GET /users/profile`
+
+## Description
+
+Retrieves the profile information of the currently authenticated user.
+
+## Authentication
+
+Requires a valid JWT token in the Authorization header or as a cookie.
+
+### Example Request
+
+```
+GET /users/profile
+Authorization: Bearer <jwt_token>
+```
+
+## Responses
+
+- **200 OK**
+
+  - Profile retrieved successfully.
+  - Response body:
+    ```
+    {
+      "_id": "user_id",
+      "fullName": {
+        "firstName": "John",
+        "lastName": "Doe"
+      },
+      "email": "john.doe@example.com",
+      ...otherUserFields
+    }
+    ```
+
+- **401 Unauthorized**
+  - No token provided or invalid token.
+    ```
+    {
+      "message": "Unauthorized"
+    }
+    ```
+
+## Notes
+
+- Must include a valid JWT token in the request header or as a cookie.
+- Returns the authenticated user's profile data.
+
+---
+
+## Endpoint
+
+`GET /users/logout`
+
+## Description
+
+Logs out the currently authenticated user by invalidating their token.
+
+## Authentication
+
+Requires a valid JWT token in the Authorization header or as a cookie.
+
+### Example Request
+
+```
+GET /users/logout
+Authorization: Bearer <jwt_token>
+```
+
+## Responses
+
+- **200 OK**
+
+  - Successfully logged out.
+  - Response body:
+    ```
+    {
+      "message": "Logged out"
+    }
+    ```
+
+- **401 Unauthorized**
+  - No token provided or invalid token.
+    ```
+    {
+      "message": "Unauthorized"
+    }
+    ```
+
+## Notes
+
+- Must include a valid JWT token in the request header or as a cookie.
+- Clears the authentication cookie and blacklists the token to prevent reuse.

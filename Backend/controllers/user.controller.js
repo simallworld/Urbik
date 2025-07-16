@@ -1,9 +1,10 @@
 import userModel from "../models/user.model.js";
 import userService from "../services/user.service.js";
 import { validationResult } from "express-validator";
+import BlacklistTokenModel from "../models/blacklistToken.model.js";
 
 //Register Controller
-export async function registerUser(req, res, next) {
+async function registerUser(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -25,7 +26,7 @@ export async function registerUser(req, res, next) {
 }
 
 //Login Controller
-export async function loginUser(req, res, next) {
+async function loginUser(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -46,10 +47,32 @@ export async function loginUser(req, res, next) {
 
   //Generate token
   const token = user.generateAuthToken();
-  res.status(200).json({token, user});
+
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 3600000,
+  });
+
+  res.status(200).json({ token, user });
+}
+
+//Profile Controller
+async function getUserProfile(req, res, next) {
+  res.status(200).json(res.user);
+}
+
+async function logout(req, res, next) {
+  res.clearCookie("token");
+  const token = req.cookies.token || req.headers.authorization.split(" ")[1];
+
+  await BlacklistTokenModel.create({ token });
+  res.status(200).json({ message: "Logged out" });
 }
 
 export default {
   registerUser,
   loginUser,
+  getUserProfile,
+  logout,
 };
