@@ -4,7 +4,7 @@ import UserSignup from "./pages/UserSignup";
 import UserLogin from "./pages/UserLogin";
 import CaptainSignup from "./pages/CaptainSignup";
 import CaptainLogin from "./pages/CaptainLogin";
-import ForBidden from "./pages/ForBidden.jsx"
+import ForBidden from "./pages/ForBidden.js"
 import './App.css'
 
 function App() {
