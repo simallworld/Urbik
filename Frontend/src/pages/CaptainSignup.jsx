@@ -21,8 +21,8 @@ const CaptainSignup = () => {
   return (
     <>
       <form onSubmit={submitHandler}>
-        <div className='flex flex-col item-center justify-center m-3 w-90 mx-auto gap-5 md:flex md:flex-col md:mt-10 md:item-center md:justify-center md:w-1/3 md:gap-5'>
-          <h1 className='text-black md:text-black text-4xl md:text-5xl font-bold md:font-bold mt-3 ml-3'>Urbik</h1>
+        <div className='flex flex-col item-center justify-center m-3 w-90 mx-auto gap-5 mt-14 md:flex md:flex-col md:mt-10 md:item-center md:justify-center md:w-1/3 md:gap-5'>
+          <h1 className='text-black md:text-black text-4xl md:text-5xl font-bold md:font-bold mt-3 ml-3'><Link to="/" className='cursor-pointer'>Urbik</Link></h1>
           <div className='flex flex-col px-3 mt-15 md:mt-3 gap-2'>
             <h3 className='md:text-xl text-sm font-bold'>Enter Captain's name</h3>
             <div className='flex gap-2'>
@@ -38,9 +38,10 @@ const CaptainSignup = () => {
             <h3 className='md:text-xl text-sm font-bold'>Enter password</h3>
             <input className='bg-gray-200 p-2 md:text-xl md:p-2 rounded' required type="text" placeholder='Your password' name='password' value={password} onChange={handleChange} />
           </div>
-          <Link to="" onClick={submitHandler} className='flex item-center justify-center cursor-pointer px-2 w-84 m-3 mx-auto bg-black text-white py-3 rounded md:justify-center md:w-120 md:mx-auto md:mt-3'>Register</Link>
+          {/* <Link to="" onClick={submitHandler} className='flex item-center justify-center cursor-pointer px-2 w-84 m-3 mx-auto bg-black text-white py-2 rounded md:justify-center md:w-120 md:mx-auto md:py-3 md:mt-3'>Register</Link> */}
+          <Link to="" onClick={submitHandler} className="group relative z-0 h-10 overflow-hidden overflow-x-hidden rounded-md flex  item-center justify-center cursor-pointer px-2 w-84 m-3 mx-auto bg-black text-white py-2 md:justify-center md:h-12 md:w-120 md:mx-auto md:py-3 md:mt-10"><span className="relative z-10">Register</span><span className="absolute inset-0 overflow-hidden rounded-md"><span className="absolute left-0 aspect-square w-full origin-center -translate-x-full rounded-full bg-blue-400 transition-all duration-500 group-hover:-translate-x-0 group-hover:scale-150"></span></span></Link>
           <p className='text-center text-sm md:text-lg'>Already registered? <Link to="/captain-login" className='text-blue-500 font-bold'>Login</Link></p>
-          <p className='text-center w-[270px] mx-auto text-[9px] mt-30 md:w-[270px] md:mt-15 md:text-[12px]'>This site is protected by reCAPTCHA and the <a className='border-b-1' href="#">Google Privacy Policy</a> and <a className='border-b-1' href="#">Terms of service apply</a>.</p>
+          <p className='text-center w-[270px] mx-auto text-[9px] mt-15 md:w-[270px] md:mt-10 md:text-[12px]'>This site is protected by reCAPTCHA and the <a className='border-b-1' href="#">Google Privacy Policy</a> and <a className='border-b-1' href="#">Terms of service apply</a>.</p>
         </div>
       </form>
     </>
