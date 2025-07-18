@@ -25,6 +25,10 @@ const captainSchema = new mongoose.Schema({
     type: String,
     required: true,
     select: false,
+    match: [
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/,
+      "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character",
+    ],
   },
   socketId: {
     type: String,
@@ -43,6 +47,7 @@ const captainSchema = new mongoose.Schema({
     plate: {
       type: String,
       required: true,
+      unique: true,
       minLength: [3, "Plate must be at least 3 characters long"],
     },
     capacity: {

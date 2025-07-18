@@ -244,41 +244,53 @@ Registers a new captain in the system. The endpoint expects captain details, inc
 
 ### Request Body
 
-Send a JSON object with the following structure:
-
-```
+```jsonc
 {
   "fullName": {
-    "firstName": "string (min 3 chars, required)",
-    "lastName": "string (min 3 chars, optional)"
+    "firstName": "Alice", // string, required, min 3 chars
+    "lastName": "Smith" // string, optional, min 3 chars
   },
-  "email": "string (valid email, required)",
-  "password": "string (min 6 chars, required)",
+  "email": "alice.smith@example.com", // string, required, valid email, unique
+  "password": "Secure@123", // string, required, min 8 chars, must include uppercase, lowercase, number, special char
   "vehicle": {
-    "color": "string (min 3 chars, required)",
-    "plate": "string (min 3 chars, required)",
-    "capacity": "number (min 1, required)",
-    "vehicleType": "string (car|bike|auto|e-rikshaw, required)"
+    "color": "Red", // string, required, min 3 chars
+    "plate": "XYZ123", // string, required, min 3 chars, unique
+    "capacity": 4, // number, required, min 1
+    "vehicleType": "car" // string, required, one of: "car", "bike", "auto", "e-rikshaw"
   }
 }
 ```
 
-#### Example
+### Response
 
-```
+```jsonc
+// Success (201 Created)
 {
-  "fullName": {
-    "firstName": "Alice",
-    "lastName": "Smith"
-  },
-  "email": "alice.smith@example.com",
-  "password": "securepass",
-  "vehicle": {
-    "color": "Red",
-    "plate": "XYZ123",
-    "capacity": 4,
-    "vehicleType": "car"
+  "token": "<jwt_token>",
+  "captain": {
+    "_id": "captain_id",
+    "fullName": {
+      "firstName": "Alice",
+      "lastName": "Smith"
+    },
+    "email": "alice.smith@example.com",
+    "vehicle": {
+      "color": "Red",
+      "plate": "XYZ123",
+      "capacity": 4,
+      "vehicleType": "car"
+    },
+    // ...otherCaptainFields
   }
+}
+
+// Error (400 Bad Request)
+{
+  "errors": [
+    { "msg": "Error message", /* ... */ }
+  ]
+  // or
+  // "message": "Captain already exist"
 }
 ```
 

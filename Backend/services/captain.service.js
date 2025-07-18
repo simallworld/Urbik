@@ -10,7 +10,6 @@ async function createCaptain({
   capacity,
   vehicleType
 }) {
-    console.log("createCaptain inputs =>", { firstName, lastName, email, password, color, plate, capacity, vehicleType });
   if (
     !firstName ||
     !email ||
