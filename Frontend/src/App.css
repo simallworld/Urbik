@@ -1,0 +1,15 @@
+/* wetpaint.css */
+@keyframes drip {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(8px);
+    opacity: 1;
+  }
+}
+
+.animate-drip {
+  animation: drip 2s infinite ease-in-out;
+}
