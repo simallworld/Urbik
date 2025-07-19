@@ -28,7 +28,7 @@ export default [
         "warn",
         { allowConstantExport: true },
       ],
-      "import/no-unresolved": [2, { caseSensitive: true }],
+      "import/no-unresolved": [2, { caseSensitive: false }],
     },
   },
 ];

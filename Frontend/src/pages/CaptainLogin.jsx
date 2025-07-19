@@ -30,7 +30,7 @@ const CaptainLogin = () => {
           {/* <Link to="" onClick={submitHandler} className='flex item-center justify-center cursor-pointer px-2 w-84 m-3 mx-auto bg-black text-white py-2 rounded md:justify-center md:w-120 md:mx-auto md:py-3 md:mt-10'>Login</Link> */}
           <Link to="" onClick={submitHandler} className="group relative z-0 h-10 overflow-hidden overflow-x-hidden rounded-md flex  item-center justify-center cursor-pointer px-2 w-84 m-3 mx-auto bg-black text-white py-2 md:justify-center md:h-12 md:w-120 md:mx-auto md:py-3 md:mt-10"><span className="relative z-10">Login</span><span className="absolute inset-0 overflow-hidden rounded-md"><span className="absolute left-0 aspect-square w-full origin-center translate-x-full rounded-full bg-blue-400 transition-all duration-500 group-hover:-translate-x-0 group-hover:scale-150"></span></span></Link>
           <p className='text-center text-sm md:text-lg'>Don't have an account? <Link to="/captain-signup" className='text-blue-500 font-bold'>Register as Captain</Link></p>
-          <Link to="/login" className='flex item-center justify-center cursor-pointer mt-15 px-2 w-84 m-3 mx-auto bg-orange-600 text-white py-2 rounded md:justify-center md:w-120 md:mx-auto md:mt-15 md:py-3 md:my-15'>Sign in as User</Link>
+          <Link to="/login" className='flex item-center justify-center cursor-pointer mt-15 px-2 w-84 m-3 mx-auto bg-orange-500 hover:bg-orange-600 transition-ease-in-out duration-200 text-white py-2 rounded md:justify-center md:w-120 md:mx-auto md:mt-15 md:py-3 md:my-15'>Sign in as User</Link>
         </div>
       </form>
     </>
