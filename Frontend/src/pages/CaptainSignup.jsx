@@ -30,11 +30,11 @@ const CaptainSignup = () => {
               <input className='bg-gray-200 w-1/2 md:text-xl p-2 md:p-2 rounded' required type="text" placeholder='Last name' name='l-name' value={lname} onChange={handleChange} />
             </div>
           </div>
-          <div className='flex flex-col rounded px-3 mt-5 md:mt-3 gap-2'>
+          <div className='flex flex-col rounded px-3 mt-2 md:mt-3 gap-2'>
             <h3 className='md:text-xl text-sm font-bold'>Enter Captain's email</h3>
             <input className='bg-gray-200 md:text-xl p-2 md:p-2 rounded' required type="text" placeholder='Your email' name='email' value={email} onChange={handleChange} />
           </div>
-          <div className='flex flex-col rounded px-3 mt-5 md:mt-3 gap-2'>
+          <div className='flex flex-col rounded px-3 mt-2 md:mt-3 gap-2'>
             <h3 className='md:text-xl text-sm font-bold'>Enter password</h3>
             <input className='bg-gray-200 p-2 md:text-xl md:p-2 rounded' required type="text" placeholder='Your password' name='password' value={password} onChange={handleChange} />
           </div>

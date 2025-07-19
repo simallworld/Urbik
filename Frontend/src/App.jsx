@@ -4,7 +4,7 @@ import UserSignup from "./pages/UserSignup";
 import UserLogin from "./pages/UserLogin";
 import CaptainSignup from "./pages/CaptainSignup";
 import CaptainLogin from "./pages/CaptainLogin";
-import ForBidden from "./pages/ForBidden";
+// import ForBidden from "./pages/ForBidden";
 import './App.css';
 
 function App() {
@@ -18,7 +18,7 @@ function App() {
         <Route path="/login" element={<UserLogin />} />
         <Route path="/captain-signup" element={<CaptainSignup />} />
         <Route path="/captain-login" element={<CaptainLogin />} />
-        <Route path="*" element={<ForBidden />} />
+        {/* <Route path="*" element={<ForBidden />} /> */}
       </Routes>
     </>
   )
