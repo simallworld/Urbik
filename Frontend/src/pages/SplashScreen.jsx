@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 
-const Home = () => {
+const SplashScreen = () => {
   return (
     <>
       <div>
@@ -17,4 +17,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default SplashScreen;

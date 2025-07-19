@@ -13,8 +13,6 @@ const ForBidden = () => {
       <div className="absolute w-[800px] h-[300px] bg-gradient-to-bl from-purple-500 via-indigo-400 to-blue-400 rounded-full blur-2xl opacity-50 top-1/9 right-1/4 animate-spin-slow"></div>
       <div className='absolute w-[800px] h-[900px] bg-gradient-to-r from-pink-500 via-yellow-400 to-cyan-400 rounded-full blur-3xl backdrop-blur opacity-80 top-1/8 left-3/4 animate-pulse'></div>
 
-
-
       <div className="relative inline-block group">
         <Link to="/" className="px-10 py-3 hover:bg-black hover:text-white hover:border-black transform transition-all duration-300 text-black text-lg font-bold cursor-pointer border-3 rounded-lg">
           Go back
