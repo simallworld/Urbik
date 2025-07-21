@@ -4,13 +4,16 @@ import { BrowserRouter } from "react-router";
 import './index.css'
 import App from './App.jsx'
 import UserContext from './context/UserContext.jsx';
+import CaptainContext from './context/CaptainContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
-    <UserContext>
-      <StrictMode>
-        <App />
-      </StrictMode>
-    </UserContext>
+    <CaptainContext>
+      <UserContext>
+        <StrictMode>
+          <App />
+        </StrictMode>
+      </UserContext>
+    </CaptainContext>
   </BrowserRouter>,
 )

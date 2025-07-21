@@ -9,7 +9,7 @@ const UserProtectedRoute = ({ children }) => {
 
     useEffect(() => {
         if (!token) {
-            navigate("/login")
+            navigate("/captain-login")
         }
     }, [token])
 

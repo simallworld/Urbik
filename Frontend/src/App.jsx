@@ -9,6 +9,9 @@ import ForBidden from "./pages/ForBidden";
 import './App.css';
 import UserProtectedRoute from "./pages/UserProtectedRoute";
 import UserLogout from "./pages/UserLogout";
+import CaptainHome from "./pages/CaptainHome";
+import CaptainProtectedRoute from "./pages/CaptainProtectedRoute";
+import CaptainLogout from "./pages/CaptainLogout";
 
 function App() {
 
@@ -26,10 +29,22 @@ function App() {
           </UserProtectedRoute>
         } />
         <Route path="/*" element={<ForBidden />} />
-        <Route path="/user/logout" element={<UserProtectedRoute>
-          <UserLogout />
-        </UserProtectedRoute>} />
+        <Route path="/user/logout" element={
+          <UserProtectedRoute>
+            <UserLogout />
+          </UserProtectedRoute>
+        } />
+        <Route path="/captain-home" element={
+          <CaptainProtectedRoute>
+            <CaptainHome />
+          </CaptainProtectedRoute>} />
+        <Route path="/captain/logout" element={
+          <UserProtectedRoute>
+            <CaptainLogout />
+          </UserProtectedRoute>
+        } />
       </Routes>
+
     </>
   )
 }
