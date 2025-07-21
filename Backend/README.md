@@ -1,4 +1,4 @@
-# Backend API Documentation
+# URBIK Backend API Documentation
 
 ## User Endpoints
 
@@ -11,6 +11,7 @@
 Registers a new user in the system. Expects user details in the request body, validates input, hashes the password, creates the user, and returns an authentication token with user data.
 
 **Request Body:**
+
 ```json
 {
   "fullName": {
@@ -23,6 +24,7 @@ Registers a new user in the system. Expects user details in the request body, va
 ```
 
 **Example:**
+
 ```json
 {
   "fullName": {
@@ -40,19 +42,20 @@ Registers a new user in the system. Expects user details in the request body, va
   ```json
   {
     "token": "<jwt_token>",
-    "user": { /* user object */ }
+    "user": {
+      /* user object */
+    }
   }
   ```
 - **400 Bad Request**
   ```json
   {
-    "errors": [
-      { "msg": "Error message" }
-    ]
+    "errors": [{ "msg": "Error message" }]
   }
   ```
 
 **Notes:**
+
 - All required fields must be provided and valid.
 - Password is securely hashed before storage.
 - Response includes a JWT token for authentication.
@@ -68,6 +71,7 @@ Registers a new user in the system. Expects user details in the request body, va
 Authenticates an existing user. Checks credentials and, if valid, returns an authentication token and user data.
 
 **Request Body:**
+
 ```json
 {
   "email": "string (valid email, required)",
@@ -76,6 +80,7 @@ Authenticates an existing user. Checks credentials and, if valid, returns an aut
 ```
 
 **Example:**
+
 ```json
 {
   "email": "john.doe@example.com",
@@ -89,15 +94,15 @@ Authenticates an existing user. Checks credentials and, if valid, returns an aut
   ```json
   {
     "token": "<jwt_token>",
-    "user": { /* user object */ }
+    "user": {
+      /* user object */
+    }
   }
   ```
 - **400 Bad Request**
   ```json
   {
-    "errors": [
-      { "msg": "Error message" }
-    ]
+    "errors": [{ "msg": "Error message" }]
   }
   ```
 - **401 Unauthorized**
@@ -108,6 +113,7 @@ Authenticates an existing user. Checks credentials and, if valid, returns an aut
   ```
 
 **Notes:**
+
 - Both fields are required and must be valid.
 - Returns a JWT token for authentication on successful login.
 
@@ -125,6 +131,7 @@ Retrieves the profile information of the currently authenticated user.
 Requires a valid JWT token in the Authorization header or as a cookie.
 
 **Example Request:**
+
 ```
 GET /users/profile
 Authorization: Bearer <jwt_token>
@@ -152,6 +159,7 @@ Authorization: Bearer <jwt_token>
   ```
 
 **Notes:**
+
 - Must include a valid JWT token in the request header or as a cookie.
 - Returns the authenticated user's profile data.
 
@@ -169,6 +177,7 @@ Logs out the currently authenticated user by invalidating their token.
 Requires a valid JWT token in the Authorization header or as a cookie.
 
 **Example Request:**
+
 ```
 GET /users/logout
 Authorization: Bearer <jwt_token>
@@ -190,6 +199,7 @@ Authorization: Bearer <jwt_token>
   ```
 
 **Notes:**
+
 - Must include a valid JWT token in the request header or as a cookie.
 - Clears the authentication cookie and blacklists the token to prevent reuse.
 
@@ -206,19 +216,20 @@ Authorization: Bearer <jwt_token>
 Registers a new captain in the system. Expects captain details, including vehicle information, in the request body. Validates input, hashes the password, creates the captain, and returns an authentication token with captain data.
 
 **Request Body:**
+
 ```json
 {
   "fullName": {
     "firstName": "Alice", // string, required, min 3 chars
-    "lastName": "Smith"   // string, optional, min 3 chars
+    "lastName": "Smith" // string, optional, min 3 chars
   },
   "email": "alice.smith@example.com", // string, required, valid email, unique
-  "password": "Secure@123",           // string, required, min 8 chars, must include uppercase, lowercase, number, special char
+  "password": "Secure@123", // string, required, min 8 chars, must include uppercase, lowercase, number, special char
   "vehicle": {
-    "color": "Red",                   // string, required, min 3 chars
-    "plate": "XYZ123",                // string, required, min 3 chars, unique
-    "capacity": 4,                    // number, required, min 1
-    "vehicleType": "car"              // string, required, one of: "car", "bike", "auto", "e-rikshaw"
+    "color": "Red", // string, required, min 3 chars
+    "plate": "XYZ123", // string, required, min 3 chars, unique
+    "capacity": 4, // number, required, min 1
+    "vehicleType": "car" // string, required, one of: "car", "bike", "auto", "e-rikshaw"
   }
 }
 ```
@@ -249,15 +260,14 @@ Registers a new captain in the system. Expects captain details, including vehicl
 - **400 Bad Request**
   ```json
   {
-    "errors": [
-      { "msg": "Error message" }
-    ]
+    "errors": [{ "msg": "Error message" }]
     // or
     // "message": "Captain already exist"
   }
   ```
 
 **Notes:**
+
 - All required fields must be provided and valid.
 - Password is securely hashed before storage.
 - Response includes a JWT token for authentication.
@@ -273,10 +283,11 @@ Registers a new captain in the system. Expects captain details, including vehicl
 Authenticates a captain. Checks credentials and, if valid, returns an authentication token and captain data.
 
 **Request Body:**
+
 ```json
 {
   "email": "alice.smith@example.com", // string, required, valid email
-  "password": "Secure@123"            // string, required, min 8 chars, must include uppercase, lowercase, number, special char
+  "password": "Secure@123" // string, required, min 8 chars, must include uppercase, lowercase, number, special char
 }
 ```
 
@@ -306,9 +317,7 @@ Authenticates a captain. Checks credentials and, if valid, returns an authentica
 - **400 Bad Request**
   ```json
   {
-    "errors": [
-      { "msg": "Error message" }
-    ]
+    "errors": [{ "msg": "Error message" }]
   }
   ```
 - **401 Unauthorized**
@@ -332,6 +341,7 @@ Retrieves the profile information of the currently authenticated captain.
 Requires a valid JWT token in the Authorization header or as a cookie.
 
 **Example Request:**
+
 ```
 GET /captains/profile
 Authorization: Bearer <jwt_token>
@@ -380,6 +390,7 @@ Logs out the currently authenticated captain by invalidating their token.
 Requires a valid JWT token in the Authorization header or as a cookie.
 
 **Example Request:**
+
 ```
 GET /captains/logout
 Authorization: Bearer <jwt_token>
@@ -401,4 +412,3 @@ Authorization: Bearer <jwt_token>
   ```
 
 ---
-
