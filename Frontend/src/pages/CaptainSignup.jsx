@@ -1,9 +1,11 @@
+// Import necessary dependencies
 import React, { useContext, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { CaptainDataContext } from '../context/CaptainContext'
 
 const CaptainSignup = () => {
+  // State for form fields
   const [fname, setFname] = useState('')
   const [lname, setLname] = useState('')
   const [email, setEmail] = useState('');
@@ -13,20 +15,26 @@ const CaptainSignup = () => {
   const [vehicleCapacity, setVehicleCapacity] = useState('')
   const [vehicleType, setVehicleType] = useState('')
   
+  // Hook for programmatic navigation
   const navigate = useNavigate()
   
+  // Context for managing captain's data globally
   const { captain, setCaptain } = useContext(CaptainDataContext)
 
+  // Handle input changes for form fields
   const handleChange = (e) => {
     const { name, value } = e.target;
+    // Update state based on input field name
     setFname(name === "f-name" ? value : fname);
     setLname(name === "l-name" ? value : lname);
     setEmail(name === "email" ? value : email);
     setPassword(name === "password" ? value : password);
   }
 
+  // Handle form submission
   const submitHandler = async (e) => {
     e.preventDefault();
+    // Prepare data object for API request
     const captainData = {
       fullName: {
         firstName: fname,
@@ -42,20 +50,26 @@ const CaptainSignup = () => {
       }
     }
 
-    //Connecting from backend
+    // Send registration request to backend
     try {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/register`, captainData)
 
       if (response.status === 200) {
         const data = response.data
+        // Update global captain state
         setCaptain(data.captain)
-        localStorage.setItem("token", data.token)  //Set token first
-        navigate('/captain-home');   // then navigate
+        // Store authentication token
+        localStorage.setItem("token", data.token)
+        // Redirect to captain's home page
+        navigate('/captain-home');
       }
     } catch (error) {
+      // Handle registration failure
       console.error("Registration failed:", error.response?.data || error.message);
+      // TODO: Add user-friendly error handling (e.g., displaying error messages)
     }
 
+    // Reset form fields after submission
     setEmail('')
     setFname('')
     setLname('')
@@ -69,9 +83,13 @@ const CaptainSignup = () => {
 
   return (
     <>
+      {/* Registration form */}
       <form onSubmit={submitHandler}>
+        {/* Main container with responsive styles */}
         <div className='flex flex-col item-center justify-center m-3 w-90 mx-auto gap-5 mt-14 md:flex md:flex-col md:mt-10 md:item-center md:justify-center md:w-1/3 md:gap-5'>
+          {/* Logo/Brand name */}
           <h1 className='text-black md:text-black text-4xl md:text-5xl font-bold md:font-bold mt-3 ml-3'><Link to="/" className='cursor-pointer'>Urbik</Link></h1>
+          {/* Name input section */}
           <div className='flex flex-col px-3 mt-15 md:mt-3 gap-2'>
             <h3 className='md:text-xl text-sm font-bold'>Enter Captain's name</h3>
             <div className='flex gap-2'>
@@ -79,15 +97,18 @@ const CaptainSignup = () => {
               <input className='bg-gray-200 w-1/2 md:text-xl p-2 md:p-2 rounded' required type="text" placeholder='Last name' name='l-name' value={lname} onChange={handleChange} />
             </div>
           </div>
+          {/* Email input section */}
           <div className='flex flex-col rounded px-3 mt-2 md:mt-3 gap-2'>
             <h3 className='md:text-xl text-sm font-bold'>Enter Captain's email</h3>
-            <input className='bg-gray-200 md:text-xl p-2 md:p-2 rounded' required type="text" placeholder='Your email' name='email' value={email} onChange={handleChange} />
+            <input className='bg-gray-200 md:text-xl p-2 md:p-2 rounded' required type="email" placeholder='Your email' name='email' value={email} onChange={handleChange} />
           </div>
+          {/* Password input section */}
           <div className='flex flex-col rounded px-3 mt-2 md:mt-3 gap-2'>
             <h3 className='md:text-xl text-sm font-bold'>Enter password</h3>
             <input className='bg-gray-200 p-2 md:text-xl md:p-2 rounded' required type="password" placeholder='Your password' name='password' value={password} onChange={handleChange} />
           </div>
 
+          {/* Vehicle details section */}
           <div className='flex flex-col rounded px-3 gap-2'>
             <div className='flex flex-col rounded mt-2 md:mt-3 gap-2'>
               <h3 className='md:text-xl text-sm font-bold'>Vehicle Details</h3>

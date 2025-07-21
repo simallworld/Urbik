@@ -1,8 +1,16 @@
+// Import required models and services
 import captainModel from "../models/captain.model.js";
 import captainService from "../services/captain.service.js";
 import BlacklistTokenModel from "../models/blacklistToken.model.js";
 import { validationResult } from "express-validator";
 
+/**
+ * Register a new captain
+ * @param {Object} req - Express request object containing captain details
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Object} JSON response with token and captain details
+ */
 async function registerCaptain(req, res, next) {
   try {
     const errors = validationResult(req);
@@ -37,7 +45,15 @@ async function registerCaptain(req, res, next) {
   }
 }
 
+/**
+ * Authenticate and login a captain
+ * @param {Object} req - Express request object containing email and password
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Object} JSON response with token and captain details
+ */
 async function loginCaptain(req, res, next) {
+  // Validate request body
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -60,17 +76,48 @@ async function loginCaptain(req, res, next) {
   res.status(200).json({ token, captain });
 }
 
+/**
+ * Get the profile of the authenticated captain
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object containing captain data from auth middleware
+ * @param {Function} next - Express next middleware function
+ * @returns {Object} JSON response with captain profile
+ */
 async function getCaptainProfile(req, res, next) {
   res.status(200).json({ captain: res.captain });
 }
 
+/**
+ * Logout captain by blacklisting the current token
+ * @param {Object} req - Express request object containing auth token
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Object} JSON response confirming logout
+ */
 async function logoutCaptain(req, res, next) {
-  const token = req.cookies.token || req.headers.authorization.split(" ")[1];
-  await BlacklistTokenModel.create({ token });
+  try {
+    // Get token from cookies or authorization header
+    const token =
+      req.cookies.token ||
+      (req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+        ? req.headers.authorization.split(" ")[1]
+        : null);
 
-  res.clearCookie("token");
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
 
-  res.status(200).json({ message: "Loggedout successfully" });
+    // Add token to blacklist
+    await BlacklistTokenModel.create({ token });
+
+    // Clear cookie if it exists
+    res.clearCookie("token");
+
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    next(error);
+  }
 }
 
 export default {

@@ -43,8 +43,8 @@ router.post(
 
     // Password validation with stronger requirements
     body("password")
-      .isLength({ min: 6 })
-      .withMessage("Password must be atleast 6 characters long")
+      .isLength({ min: 8 })
+      .withMessage("Password must be atleast 8 characters long")
       .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])/)
       .withMessage(
         "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
