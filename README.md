@@ -1,4 +1,6 @@
-# Urbik - Ride-Sharing Application## Project Structure
+# Urbik - Ride-Sharing Application
+
+## Project Structure
 
 ```
 ├── Frontend/
