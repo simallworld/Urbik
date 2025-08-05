@@ -3,7 +3,7 @@ const WaitingForDriver = (props) => {
         <div>
             <h5 onClick={() => { props.waitingForDriver(false) }} className="p-1 text-center w-full absolute top-0"><i className="text-3xl font-bold text-gray-300 ri-arrow-down-wide-line"></i></h5>
 
-            <div className="fiex itecms-center justify-between">
+            <div className="flex items-center justify-between">
                 <img className='h-12 w-12' src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_552,w_552/v1555367310/assets/30/51e602-10bb-4e65-b122-e394d80a9c47/original/Final_UberX.png" alt="" />
 
                 <div className="text-right">
