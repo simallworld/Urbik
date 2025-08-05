@@ -1,13 +1,19 @@
-import React from 'react'
-
-const ConfirmRide = (props) => {
+const WaitingForDriver = (props) => {
     return (
         <div>
-            <h5 onClick={() => { props.setVehicleFound(false) }} className="p-1 text-center w-full absolute top-0"><i className="text-3xl font-bold text-gray-300 ri-arrow-down-wide-line"></i></h5>
-            <h3 className="text-xl mb-2 font-semibold">Confirm your ride</h3>
+            <h5 onClick={() => { props.waitingForDriver(false) }} className="p-1 text-center w-full absolute top-0"><i className="text-3xl font-bold text-gray-300 ri-arrow-down-wide-line"></i></h5>
+
+            <div className="fiex itecms-center justify-between">
+                <img className='h-12 w-12' src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_552,w_552/v1555367310/assets/30/51e602-10bb-4e65-b122-e394d80a9c47/original/Final_UberX.png" alt="" />
+
+                <div className="text-right">
+                    <h2 className="text-lg font-medium">Shivam</h2>
+                    <h4 className="text-xl font-semibold -mt-1 -mb-1">UP72 CK 5740</h4>
+                    <p className="text-sm text-gray-600">Ciaz</p>
+                </div>
+            </div>
 
             <div className='flex justify-between gap-3 items-center flex-col'>
-                <img className='h-50 w-50' src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_552,w_552/v1555367310/assets/30/51e602-10bb-4e65-b122-e394d80a9c47/original/Final_UberX.png" alt="" />
 
                 <div className='w-full flex flex-col gap-2 mt-5'>
                     <div className='flex flex-row items-center gap-1 border-b-1 border-gray-300 p-2'>
@@ -35,15 +41,9 @@ const ConfirmRide = (props) => {
                     </div>
                 </div>
 
-                <button onClick={() => {
-                    props.setVehicleFound(true)
-                    props.setConfirmRidePanel(false)
-                }} className='mt-5 w-full bg-green-600 text-white font-semibold p-2 rounded-lg'>Confirm</button>
             </div>
         </div>
     )
 }
 
-export default ConfirmRide
-
-
+export default WaitingForDriver;

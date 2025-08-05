@@ -6,6 +6,8 @@ import 'remixicon/fonts/remixicon.css'
 import LocationSearchPanel from "../components/LocationSearchPanel";
 import VehiclePanel from "../components/vehiclePanel";
 import ConfirmRide from "../components/ConfirmRide";
+import LookingForDriver from "../components/LookingForDriver";
+import WaitingForDriver from "../components/WaitingForDriver";
 
 const Home = () => {
 
@@ -14,10 +16,15 @@ const Home = () => {
     const [panelOpen, setPanelOpen] = useState(false)
     const vehiclePanelRef = useRef(null)
     const confirmRidePanelRef = useRef(null)
+    const vehicleFoundRef = useRef(null)
+    const waitingForDriverRef = useRef(null)
+
     const panelRef = useRef(null)
     const panelCloseRef = useRef(null)
     const [vehiclePanel, setvehiclePanel] = useState(false)
     const [confirmRidePanel, setconfirmRidePanel] = useState(false)
+    const [vehicleFound, setVehicleFound] = useState(false)
+    const [waitingForDriver, setWaitingForDriver] = useState(false)
 
     const submitHandler = (e) => {
         e.preventDefault()
@@ -73,6 +80,30 @@ const Home = () => {
         }
     }, [confirmRidePanel])
 
+    useGSAP(function () {
+        if (vehicleFound) {
+            gsap.to(vehicleFoundRef.current, {
+                transform: 'translateY(0%)'
+            })
+        } else {
+            gsap.to(vehicleFoundRef.current, {
+                transform: 'translateY(100%)'
+            })
+        }
+    }, [vehicleFound])
+
+    useGSAP(function () {
+        if (waitingForDriver) {
+            gsap.to(waitingForDriverRef.current, {
+                transform: 'translateY(0%)'
+            })
+        } else {
+            gsap.to(waitingForDriverRef.current, {
+                transform: 'translateY(100%)'
+            })
+        }
+    }, [waitingForDriver])
+
     return (
         <div className="h-screen relative overflow-hidden">
             <h1 className='absolute top-3 left-3 text-black md:text-black text-3xl md:text-4xl font-bold md:font-bold'><Link to="/" className='cursor-pointer'>Urbik</Link></h1>
@@ -104,7 +135,15 @@ const Home = () => {
             </div>
 
             <div ref={confirmRidePanelRef} className="fixed z-10 bottom-0 bg-white px-3 py-6 pt-12 w-full translate-y-full">
-                <ConfirmRide />
+                <ConfirmRide setconfirmRidePanel={setconfirmRidePanel} setVehicleFound={setVehicleFound} />
+            </div>
+
+            <div ref={vehicleFoundRef} className="fixed z-10 bottom-0 bg-white px-3 py-6 pt-12 w-full translate-y-full">
+                <LookingForDriver setVehicleFound={setVehicleFound} />
+            </div>
+
+            <div ref={waitingForDriverRef} className="fixed z-10 bottom-0 bg-white px-3 py-6 pt-12 w-full">
+                <WaitingForDriver waitingForDriver={waitingForDriver} />
             </div>
         </div>
     )
