@@ -16,6 +16,7 @@ import CaptainHome from "./pages/CaptainHome";
 import CaptainProtectedRoute from "./pages/CaptainProtectedRoute";
 import CaptainLogout from "./pages/CaptainLogout";
 import Riding from "./pages/Riding";
+import CaptainRiding from "./pages/CaptainRiding";
 
 // Main App component for routing configuration
 function App() {
@@ -30,6 +31,7 @@ function App() {
         <Route path="/riding" element={<Riding />} />
         <Route path="/captain-signup" element={<CaptainSignup />} />
         <Route path="/captain-login" element={<CaptainLogin />} />
+        <Route path="/captain-riding" element={<CaptainRiding />} />
 
         {/* Protected routes for regular users */}
         <Route path="/home" element={
