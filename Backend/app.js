@@ -7,6 +7,7 @@ import cors from "cors"; // Import database connection function
 import connectToDb from "./db/db.js"; // Import route handlers
 import userRoutes from "./routes/user.routes.js";
 import captainRoutes from "./routes/captain.routes.js";
+import mapRoutes from "./routes/maps.routes.js";
 
 // Connect to MongoDB database
 connectToDb();
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
 // Mount route handlers
 app.use("/users", userRoutes); // User-related routes
 app.use("/captains", captainRoutes); // Captain-related routes
+app.use("/maps", mapRoutes); //map-related routes
 
 // Export the Express application
 export default app;

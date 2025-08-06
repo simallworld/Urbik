@@ -11,15 +11,16 @@ import authMiddleware from "../middlewares/auth.middleware.js";
 const router = express.Router();
 
 /**
- * @route   POST /register
- * @desc    Register a new user
- * @access  Public
- * @body    {
+ * -route   POST /register
+ * -desc    Register a new user
+ * -access  Public
+ * -body    {
  *            email: string,
  *            fullName: { firstName: string, lastName?: string },
  *            password: string
  *          }
  */
+
 router.post(
   "/register",
   [
