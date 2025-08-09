@@ -22,7 +22,7 @@ export const CaptainDataContext = createContext();
  */
 export const CaptainContext = ({ children }) => {
     // State for storing captain data (null when not logged in)
-    const [captain, setCaptain] = useState(null);
+    const [captain, setCaptain] = useState("");
     // State for tracking loading states during async operations
     const [isLoading, setIsLoading] = useState(false);
     // State for storing error messages
