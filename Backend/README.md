@@ -412,3 +412,82 @@ Authorization: Bearer <jwt_token>
   ```
 
 ---
+
+## Ride Endpoints
+
+### Create a New Ride
+
+**Endpoint:**
+`POST /rides/create`
+
+**Description:**
+Create a new ride in the system.
+
+---
+
+### Get Fare for a Ride
+
+**Endpoint:**
+`GET /rides/get-fare`
+
+**Description:**
+Retrieves the estimated fare for a ride based on the pickup and destination locations. The fare is calculated for different vehicle types (auto, car, bike, eRikshaw) based on distance and time.
+
+**Authentication:**
+Requires user authentication (protected route). A valid JWT token must be provided in the Authorization header or as a cookie.
+
+**Query Parameters:**
+
+*   `pickup`: `string` (required, minimum length 3). The starting location for the ride.
+*   `destination`: `string` (required, minimum length 3). The ending location for the ride.
+
+**Example Request:**
+
+```
+GET /rides/get-fare?pickup=LocationA&destination=LocationB
+Authorization: Bearer <jwt_token>
+```
+
+**Responses:**
+
+*   **200 OK**
+    ```json
+    {
+      "fare": {
+        "auto": 30,
+        "car": 50,
+        "bike": 20,
+        "eRikshaw": 25
+      }
+    }
+    ```
+    (Note: The actual fare values will be calculated dynamically based on distance and time, these are just example base fares.)
+*   **400 Bad Request**
+    ```json
+    {
+      "errors": [
+        {
+          "type": "field",
+          "value": "Invalid pickup address",
+          "msg": "Invalid pickup address",
+          "path": "pickup",
+          "location": "query"
+        }
+      ]
+    }
+    ```
+    (Or similar error messages for `destination` or if both are missing.)
+*   **401 Unauthorized**
+    ```json
+    {
+      "message": "Unauthorized"
+    }
+    ```
+    (If no valid JWT token is provided.)
+*   **500 Internal Server Error**
+    ```json
+    {
+      "message": "Error message"
+    }
+    ```
+    (For server-side errors, e.g., issues with map service.)

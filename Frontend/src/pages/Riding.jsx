@@ -1,7 +1,31 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import { useEffect, useContext } from 'react'
+import { SocketContext } from '../context/SocketContext'
+import { useNavigate } from 'react-router-dom'
+import LiveTracking from '../components/LiveTracking'
 
 const Riding = () => {
+    const location = useLocation()
+    const { ride } = location.state || {} //Retrieve ride data
+    const { socket } = useContext(SocketContext)
+    const navigate = useNavigate()
+
+    socket.on("ride-ended", () => {
+        navigate("/home")
+    })
+
+    // Fallback data in case ride data is not available
+    const rideData = ride || {
+        captain: {
+            fullName: { firstName: 'Driver' },
+            vehicle: { plate: 'N/A', model: 'Vehicle' }
+        },
+        pickup: 'Pickup Location',
+        destination: 'Destination',
+        fare: 0
+    }
+
     return (
         <div className='h-screen'>
 
@@ -10,7 +34,8 @@ const Riding = () => {
             </Link>
 
             <div className='h-1/2'>
-                <img className="h-full w-full object-cover" src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif" />
+                <LiveTracking />
+                {/* <img className="h-full w-full object-cover" src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif" /> */}
             </div>
             <div className='h-1/2 p-4'>
 
@@ -18,9 +43,9 @@ const Riding = () => {
                     <img className='h-18 w-18' src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_552,w_552/v1555367310/assets/30/51e602-10bb-4e65-b122-e394d80a9c47/original/Final_UberX.png" alt="" />
 
                     <div className="text-right">
-                        <h2 className="text-lg font-medium">Shivam</h2>
-                        <h4 className="text-xl font-semibold -mt-1 -mb-1">UP72 CK 5740</h4>
-                        <p className="text-sm text-gray-600">Ciaz</p>
+                        <h2 className="text-lg font-medium capitalize">{rideData.captain?.fullName?.firstName || 'Driver'}</h2>
+                        <h4 className="text-xl font-semibold -mt-1 -mb-1">{rideData.captain?.vehicle?.plate || 'N/A'}</h4>
+                        <p className="text-sm text-gray-600">{rideData.captain?.vehicle?.model || 'Vehicle'}</p>
                     </div>
                 </div>
 
@@ -30,23 +55,23 @@ const Riding = () => {
                         <div className='flex flex-row items-center gap-1 border-b-1 border-gray-300 p-2'>
                             <h2 className=' h-8 w-8 text-xl flex items-center justify-center'><i className='ri-map-pin-fill'></i></h2>
                             <div className='flex flex-col'>
-                                <h3 className='font-medium text-lg'>562/13-B</h3>
-                                <p className='text-gray-600 text-sm'>N42 Bishanpura, Noida</p>
+                                <h3 className='font-medium text-lg'>Pickup</h3>
+                                <p className='text-gray-600 text-sm'>{rideData.pickup}</p>
                             </div>
                         </div>
 
                         <div className='flex flex-row items-center gap-1 border-b-1 border-gray-300 p-2'>
                             <h2 className=' h-8 w-8 text-xl flex items-center justify-center'><i className='ri-map-pin-user-fill'></i></h2>
                             <div className='flex flex-col'>
-                                <h3 className='font-medium text-lg'>Karol Bagh</h3>
-                                <p className='text-gray-600 text-sm'>New Delhi</p>
+                                <h3 className='font-medium text-lg'>Destination</h3>
+                                <p className='text-gray-600 text-sm'>{rideData.destination}</p>
                             </div>
                         </div>
 
                         <div className='flex flex-row items-center gap-1 p-2'>
                             <h2 className=' h-8 w-8 text-xl flex items-center justify-center'><i className='ri-currency-line'></i></h2>
                             <div className='flex flex-col'>
-                                <h3 className='font-medium text-lg'>₹173</h3>
+                                <h3 className='font-medium text-lg'>₹{rideData.fare}</h3>
                                 <p className='text-gray-600 text-sm'>Only cash</p>
                             </div>
                         </div>

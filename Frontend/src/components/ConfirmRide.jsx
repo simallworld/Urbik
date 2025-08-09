@@ -14,7 +14,7 @@ const ConfirmRide = (props) => {
                         <h2 className=' h-8 w-8 text-xl flex items-center justify-center'><i className='ri-map-pin-fill'></i></h2>
                         <div className='flex flex-col'>
                             <h3 className='font-medium text-lg'>562/13-B</h3>
-                            <p className='text-gray-600 text-sm'>N42 Bishanpura, Noida</p>
+                            <p className='text-gray-600 text-sm'>{props.pickup}</p>
                         </div>
                     </div>
 
@@ -22,14 +22,14 @@ const ConfirmRide = (props) => {
                         <h2 className=' h-8 w-8 text-xl flex items-center justify-center'><i className='ri-map-pin-user-fill'></i></h2>
                         <div className='flex flex-col'>
                             <h3 className='font-medium text-lg'>Karol Bagh</h3>
-                            <p className='text-gray-600 text-sm'>New Delhi</p>
+                            <p className='text-gray-600 text-sm'>{props.destination}</p>
                         </div>
                     </div>
 
                     <div className='flex flex-row items-center gap-1 p-2'>
                         <h2 className=' h-8 w-8 text-xl flex items-center justify-center'><i className='ri-currency-line'></i></h2>
                         <div className='flex flex-col'>
-                            <h3 className='font-medium text-lg'>₹173</h3>
+                            <h3 className='font-medium text-lg'>₹{props.fare[props.vehicleType]}</h3>
                             <p className='text-gray-600 text-sm'>Only cash</p>
                         </div>
                     </div>
@@ -38,6 +38,7 @@ const ConfirmRide = (props) => {
                 <button onClick={() => {
                     props.setVehicleFound(true)
                     props.setConfirmRidePanel(false)
+                    props.createRide()
                 }} className='mt-5 w-full bg-green-600 text-white font-semibold p-2 rounded-lg'>Confirm</button>
             </div>
         </div>

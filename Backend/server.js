@@ -2,6 +2,8 @@
 import http from "http";
 // Import the Express application instance from app.js
 import app from "./app.js";
+// Import socket initialization function
+import { initializeSocket } from "./socket.js";
 
 // Set the port for the server to listen on
 // Use environment variable PORT if available, otherwise default to 3000
@@ -9,6 +11,9 @@ const port = process.env.PORT || 3000;
 
 // Create an HTTP server instance using the Express app
 const server = http.createServer(app);
+
+// Initialize Socket.IO
+initializeSocket(server);
 
 // Start the server and listen for incoming connections
 server.listen(port, () => {
