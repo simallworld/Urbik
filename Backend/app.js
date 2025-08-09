@@ -8,7 +8,7 @@ import connectToDb from "./db/db.js"; // Import route handlers
 import userRoutes from "./routes/user.routes.js";
 import captainRoutes from "./routes/captain.routes.js";
 import mapRoutes from "./routes/maps.routes.js";
-import rideRoutes from "./routes/ride.routes.js"
+import rideRoutes from "./routes/ride.routes.js";
 
 // Connect to MongoDB database
 connectToDb();
@@ -17,7 +17,12 @@ connectToDb();
 const app = express();
 
 // Middleware setup
-app.use(cors()); // Enable Cross-Origin Resource Sharing
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL, // frontend URL
+    credentials: true,
+  })
+); // Enable Cross-Origin Resource Sharing
 app.use(express.json()); // Parse JSON request bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded request bodies
 app.use(cookieParser()); // Parse Cookie header and populate req.cookies
