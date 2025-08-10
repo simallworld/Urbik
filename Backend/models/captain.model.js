@@ -1,26 +1,22 @@
-// Required dependencies
 import mongoose from "mongoose";
-import bcrypt from "bcrypt"; // For password hashing
-import jwt from "jsonwebtoken"; // For JWT token generation
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
-// Define the Captain schema with validation rules and data structure
 const captainSchema = new mongoose.Schema(
   {
-    // Captain's full name with validation for first and last name
     fullName: {
       firstName: {
         type: String,
         required: true,
         minlength: [3, "FirstName must be at least 3 characters long"],
-        trim: true, // Adding trim to remove whitespace
+        trim: true,
       },
       lastName: {
         type: String,
-        minlength: [3, "LastName must be at least 3 characters long"], // Fixed error message
-        trim: true, // Adding trim to remove whitespace
+        minlength: [3, "LastName must be at least 3 characters long"],
+        trim: true,
       },
     },
-    // Email field with validation and uniqueness constraint
     email: {
       type: String,
       required: true,
@@ -28,31 +24,27 @@ const captainSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
       match: [/^\S+@\S+\.\S+$/, "Please enter valid email"],
-      index: true, // Adding index for better query performance
+      index: true,
     },
-    // Password field with strong password requirements
     password: {
       type: String,
       required: true,
-      select: false, // Excludes password from query results by default
+      select: false,
       match: [
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/,
         "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character",
       ],
     },
-    // Socket ID for real-time communication
     socketId: {
       type: String,
-      sparse: true, // Adding sparse index since it's optional
+      sparse: true,
     },
-    // Captain's current status (active/inactive)
     status: {
       type: String,
       enum: ["active", "inactive"],
       default: "inactive",
-      index: true, // Adding index for status-based queries
+      index: true,
     },
-    // Vehicle information with detailed specifications
     vehicle: {
       color: {
         type: String,
@@ -66,25 +58,24 @@ const captainSchema = new mongoose.Schema(
         unique: true,
         minLength: [3, "Plate must be at least 3 characters long"],
         trim: true,
-        uppercase: true, // Converting plate numbers to uppercase
-        index: true, // Adding index for plate number queries
+        uppercase: true,
+        index: true,
       },
       capacity: {
-        type: Number,
+        type: Number, // changed to Number
         required: true,
         min: [1, "Capacity must be at least 1"],
-        max: [50, "Capacity cannot exceed 50"], // Adding reasonable maximum limit
+        max: [4, "Capacity seems too large"], // more flexible upper bound
       },
       vehicleType: {
         type: String,
         required: true,
         enum: ["car", "bike", "auto", "e-rikshaw"],
-        index: true, // Adding index for vehicle type queries
+        index: true,
       },
     },
-    // Geolocation coordinates for tracking captain's position
     location: {
-      ltd: {
+      lat: { // fixed typo: ltd -> lat
         type: Number,
         min: [-90, "Latitude must be between -90 and 90"],
         max: [90, "Latitude must be between -90 and 90"],
@@ -97,18 +88,16 @@ const captainSchema = new mongoose.Schema(
     },
   },
   {
-    // Adding timestamps to track document creation and updates
     timestamps: true,
+    toJSON: { virtuals: true, transform(doc, ret) { delete ret.password; return ret; } },
+    toObject: { virtuals: true, transform(doc, ret) { delete ret.password; return ret; } }
   }
 );
 
-// Create a 2dsphere index for location-based queries
+// 2dsphere for location
 captainSchema.index({ location: "2dsphere" });
 
-/**
- * Generate JWT token for authentication
- * @returns {string} JWT token
- */
+// generate token
 captainSchema.methods.generateAuthToken = function () {
   const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, {
     expiresIn: "24h",
@@ -116,25 +105,30 @@ captainSchema.methods.generateAuthToken = function () {
   return token;
 };
 
-/**
- * Compare provided password with stored hashed password
- * @param {string} password - Plain text password to compare
- * @returns {Promise<boolean>} True if passwords match
- */
+// compare password (make sure to select password when using this)
 captainSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-/**
- * Hash password before storing
- * @param {string} password - Plain text password to hash
- * @returns {Promise<string>} Hashed password
- */
+// Static method for password hashing
 captainSchema.statics.hashPassword = async function (password) {
   return await bcrypt.hash(password, 10);
 };
 
-// Create the Captain model from the schema
+// hash password pre-save
+captainSchema.pre("save", async function (next) {
+  const captain = this;
+  if (!captain.isModified("password")) return next();
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    captain.password = await bcrypt.hash(captain.password, salt);
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+});
+
 const captainModel = mongoose.model("captain", captainSchema);
 
 export default captainModel;

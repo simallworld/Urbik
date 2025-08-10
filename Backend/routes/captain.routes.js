@@ -14,21 +14,21 @@ const router = express.Router();
  * Validates and processes captain registration with the following checks:
  * - Email must be valid
  * - First name must be at least 3 characters
- * - Password must be at least 6 characters
+ * - Password must be at least 8 characters, with at least one uppercase letter,
+ *   one lowercase letter, one number, and one special character
  * - Vehicle details validation:
  *   - Color must be at least 3 characters
  *   - Plate number must be at least 3 characters
  *   - Vehicle capacity must be at least 1
- *   - Vehicle type must be one of: car, bike, auto, or e-rikshaw
+ *   - Vehicle type must be one of: car, bike, auto, or e-rickshaw
  */
 router.post(
   "/register",
   [
-    // Request body validation middleware
     body("email").isEmail().withMessage("Invalid Email"),
     body("fullName.firstName")
       .isLength({ min: 3 })
-      .withMessage("First name must be at least 3 characters"),
+      .withMessage("First name must be at least 3 characters long"),
     body("password")
       .isLength({ min: 8 })
       .withMessage("Password must be at least 8 characters long")
@@ -46,10 +46,10 @@ router.post(
       .isInt({ min: 1 })
       .withMessage("Capacity must be at least 1"),
     body("vehicle.vehicleType")
-      .isIn(["car", "bike", "auto", "e-rikshaw"])
-      .withMessage("Invalid type"),
+      .isIn(["car", "bike", "auto", "e-rickshaw"])
+      .withMessage("Invalid vehicle type"),
   ],
-  captainController.registerCaptain // Handler for captain registration
+  captainController.registerCaptain
 );
 
 /**
@@ -69,7 +69,7 @@ router.post(
       .isLength({ min: 6 })
       .withMessage("Password must be at least 6 characters"),
   ],
-  captainController.loginCaptain // Handler for captain login
+  captainController.loginCaptain
 );
 
 /**
@@ -81,8 +81,8 @@ router.post(
  */
 router.get(
   "/profile",
-  authMiddleware.authCaptain, // Authentication middleware
-  captainController.getCaptainProfile // Handler for getting captain profile
+  authMiddleware.authCaptain,
+  captainController.getCaptainProfile
 );
 
 /**
@@ -94,8 +94,8 @@ router.get(
  */
 router.get(
   "/logout",
-  authMiddleware.authCaptain, // Authentication middleware
-  captainController.logoutCaptain // Handler for captain logout
+  authMiddleware.authCaptain,
+  captainController.logoutCaptain
 );
 
 // Export the router for use in the main application

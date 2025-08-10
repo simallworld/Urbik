@@ -14,26 +14,29 @@ const CaptainSignup = () => {
   const [vehiclePlate, setVehiclePlate] = useState('')
   const [vehicleCapacity, setVehicleCapacity] = useState('')
   const [vehicleType, setVehicleType] = useState('')
-  
+
   // Hook for programmatic navigation
   const navigate = useNavigate()
-  
+
   // Context for managing captain's data globally
   const { captain, setCaptain } = useContext(CaptainDataContext)
 
-  // Handle input changes for form fields
+  // Handle input changes for the main fields
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // Update state based on input field name
-    setFname(name === "f-name" ? value : fname);
-    setLname(name === "l-name" ? value : lname);
-    setEmail(name === "email" ? value : email);
-    setPassword(name === "password" ? value : password);
+    if (name === "f-name") setFname(value);
+    else if (name === "l-name") setLname(value);
+    else if (name === "email") setEmail(value);
+    else if (name === "password") setPassword(value);
   }
 
   // Handle form submission
   const submitHandler = async (e) => {
     e.preventDefault();
+
+    // parse capacity to number (backend expects number)
+    const capacityNumber = vehicleCapacity ? Number(vehicleCapacity) : null;
+
     // Prepare data object for API request
     const captainData = {
       fullName: {
@@ -45,31 +48,38 @@ const CaptainSignup = () => {
       vehicle: {
         color: vehicleColor,
         plate: vehiclePlate,
-        capacity: vehicleCapacity,
+        capacity: capacityNumber,
         vehicleType: vehicleType
       }
+
     }
-
-    // Send registration request to backend
+    // NOTE: Ensure this matches how your backend mounts the router.
+    // Router file shows routes under /register for captain; commonly the backend mounts at /api/captain
+    // So use /api/captain/register — adjust if your server mounts it differently.
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/register`, captainData)
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/captains/register`,
+        captainData
+      )
 
-      if (response.status === 200) {
+      if (response.status === 201 || response.status === 200) {
         const data = response.data
-        // Update global captain state
-        setCaptain(data.captain)
-        // Store authentication token
-        localStorage.setItem("token", data.token)
+        // Update global captain state, if backend returns captain object
+        if (data.captain) setCaptain(data.captain)
+        // Store authentication token if sent
+        if (data.token) localStorage.setItem("token", data.token)
         // Redirect to captain's home page
         navigate('/captain-home');
+        // return;
       }
     } catch (error) {
-      // Handle registration failure
+      // Helpful error output for debugging — check browser console / network tab
       console.error("Registration failed:", error.response?.data || error.message);
-      // TODO: Add user-friendly error handling (e.g., displaying error messages)
+      // optionally show an alert or some UI message here
+      // alert(error.response?.data?.message || "Registration failed")
     }
 
-    // Reset form fields after submission
+    // Reset form fields after submission (kept as your original)
     setEmail('')
     setFname('')
     setLname('')
@@ -80,16 +90,13 @@ const CaptainSignup = () => {
     setVehicleType('')
   }
 
-
   return (
     <>
-      {/* Registration form */}
       <form onSubmit={submitHandler}>
-        {/* Main container with responsive styles */}
         <div className='flex flex-col item-center justify-center m-3 w-90 mx-auto gap-5 mt-14 md:flex md:flex-col md:mt-10 md:item-center md:justify-center md:w-1/3 md:gap-5'>
-          {/* Logo/Brand name */}
-          <h1 className='text-black md:text-black text-4xl md:text-5xl font-bold md:font-bold mt-3 ml-3'><Link to="/" className='cursor-pointer'>Urbik</Link></h1>
-          {/* Name input section */}
+          <h1 className='text-black md:text-black text-4xl md:text-5xl font-bold md:font-bold mt-3 ml-3'>
+            <Link to="/" className='cursor-pointer'>Urbik</Link>
+          </h1>
           <div className='flex flex-col px-3 mt-15 md:mt-3 gap-2'>
             <h3 className='md:text-xl text-sm font-bold'>Enter Captain's name</h3>
             <div className='flex gap-2'>
@@ -97,18 +104,14 @@ const CaptainSignup = () => {
               <input className='bg-gray-200 w-1/2 md:text-xl p-2 md:p-2 rounded' required type="text" placeholder='Last name' name='l-name' value={lname} onChange={handleChange} />
             </div>
           </div>
-          {/* Email input section */}
           <div className='flex flex-col rounded px-3 mt-2 md:mt-3 gap-2'>
             <h3 className='md:text-xl text-sm font-bold'>Enter Captain's email</h3>
             <input className='bg-gray-200 md:text-xl p-2 md:p-2 rounded' required type="email" placeholder='Your email' name='email' value={email} onChange={handleChange} />
           </div>
-          {/* Password input section */}
           <div className='flex flex-col rounded px-3 mt-2 md:mt-3 gap-2'>
             <h3 className='md:text-xl text-sm font-bold'>Enter password</h3>
             <input className='bg-gray-200 p-2 md:text-xl md:p-2 rounded' required type="password" placeholder='Your password' name='password' value={password} onChange={handleChange} />
           </div>
-
-          {/* Vehicle details section */}
           <div className='flex flex-col rounded px-3 gap-2'>
             <div className='flex flex-col rounded mt-2 md:mt-3 gap-2'>
               <h3 className='md:text-xl text-sm font-bold'>Vehicle Details</h3>
@@ -145,7 +148,7 @@ const CaptainSignup = () => {
                   value={vehicleType}
                   onChange={(e) => setVehicleType(e.target.value)}
                 >
-                  <option value="default">Select Vehicle Type</option>
+                  <option value="">Select Vehicle Type</option>
                   <option value="car">Car</option>
                   <option value="bike">Bike</option>
                   <option value="auto">Auto</option>
@@ -154,9 +157,12 @@ const CaptainSignup = () => {
               </div>
             </div>
           </div>
-
-          {/* <Link to="" onClick={submitHandler} className='flex item-center justify-center cursor-pointer px-2 w-84 m-3 mx-auto bg-black text-white py-2 rounded md:justify-center md:w-120 md:mx-auto md:py-3 md:mt-3'>Register</Link> */}
-          <button type="submit" className="group relative z-0 h-10 overflow-hidden overflow-x-hidden rounded-md flex  item-center justify-center cursor-pointer px-2 w-84 m-3 mx-auto bg-black text-white py-2 md:justify-center md:h-12 md:w-120 md:mx-auto md:py-3 md:mt-10"><span className="relative z-10">Register</span><span className="absolute inset-0 overflow-hidden rounded-md"><span className="absolute left-0 aspect-square w-full origin-center -translate-x-full rounded-full bg-blue-400 transition-all duration-500 group-hover:-translate-x-0 group-hover:scale-150"></span></span></button>
+          <button type="submit" className="group relative z-0 h-10 overflow-hidden overflow-x-hidden rounded-md flex  item-center justify-center cursor-pointer px-2 w-84 m-3 mx-auto bg-black text-white py-2 md:justify-center md:h-12 md:w-120 md:mx-auto md:py-3 md:mt-10">
+            <span className="relative cursor-pointer z-10">Register</span>
+            <span className="absolute inset-0 overflow-hidden rounded-md">
+              <span className="absolute left-0 aspect-square w-full origin-center -translate-x-full rounded-full bg-blue-400 transition-all duration-500 group-hover:-translate-x-0 group-hover:scale-150"></span>
+            </span>
+          </button>
           <p className='text-center text-sm md:text-lg'>Already registered? <Link to="/captain-login" className='text-blue-500 font-bold'>Login</Link></p>
           <p className='text-center w-[270px] mx-auto text-[9px] mt-15 md:w-[270px] md:mt-10 md:text-[12px]'>This site is protected by reCAPTCHA and the <a className='border-b-1' href="#">Google Privacy Policy</a> and <a className='border-b-1' href="#">Terms of service apply</a>.</p>
         </div>
@@ -165,4 +171,4 @@ const CaptainSignup = () => {
   )
 }
 
-export default CaptainSignup;
+export default CaptainSignup

@@ -4,64 +4,49 @@ import { Link, useNavigate } from 'react-router-dom'
 import { CaptainDataContext } from '../context/CaptainContext';
 import axios from "axios";
 
-
 // CaptainLogin Component - Handles the login functionality for captains
-// Manages form state, API communication, and navigation after successful login
-
 const CaptainLogin = () => {
-  // State management for form inputs
+  // State management for form inputs and error message
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState(""); // NEW: Error message state
 
-  // Access captain context for global state management
   const { setCaptain } = useContext(CaptainDataContext)
-  // Navigation hook for routing
   const navigate = useNavigate();
 
   /**
    * Handles input field changes
-   * @param {Event} e - The input change event
    */
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // Update corresponding state based on input name
     if (name === "email") setEmail(value);
     if (name === "password") setPassword(value);
   }
 
   /**
    * Handles form submission for captain login
-   * @param {Event} e - The form submission event
    */
   const submitHandler = async (e) => {
     e.preventDefault();
+    setErrorMsg(""); // Clear old error before sending request
 
-    const captainData = {
-      email: email,
-      password: password
-    }
+    const captainData = { email, password }
 
-    // Make API request to backend for captain login
     try {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/login`, captainData)
 
       if (response.status === 200) {
         const data = response.data
-        // Update global captain state
         setCaptain(data.captain)
-        // Store authentication token
         localStorage.setItem("token", data.token)
-        // Redirect to captain's home page
         navigate('/captain-home')
       }
     } catch (error) {
-      // Improve error handling with user feedback
-      console.error("Login failed:", error.response?.data || error.message);
-      // TODO: Add user-friendly error message display
-      alert("Login failed. Please check your credentials and try again.");
+      // Set backend or fallback error message
+      const backendError = error.response?.data?.message || "Login failed. Please check your credentials.";
+      setErrorMsg(backendError);
     }
 
-    // Clear form fields after submission attempt
     setEmail('')
     setPassword('')
   }
@@ -70,15 +55,21 @@ const CaptainLogin = () => {
   return (
     <>
       <form onSubmit={submitHandler}>
-        {/* Main container with responsive styling */}
         <div className='flex flex-col item-center justify-center m-3 w-90 mx-auto gap-5 mt-14 md:flex md:flex-col md:mt-14 md:item-center md:justify-center md:w-1/3 md:gap-5'>
-          {/* Logo/Brand header */}
           <h1 className='text-black md:text-black text-4xl md:text-5xl font-bold md:font-bold mt-3 ml-3'>
             <Link to="/" className='cursor-pointer'>Urbik</Link>
           </h1>
 
           {/* Email input field */}
           <div className='flex flex-col rounded px-3 mt-15 md:mt-10 gap-2'>
+
+            {/* Error Message */}
+            {errorMsg && (
+              <p className="bg-red-100 text-red-700 mb-5 border border-red-400 rounded p-2 text-sm md:text-base text-center">
+                {errorMsg}
+              </p>
+            )}
+
             <h3 className='md:text-xl text-sm font-bold'>What's captain email</h3>
             <input
               className='bg-gray-200 md:text-xl p-2 md:p-2 rounded'
@@ -105,7 +96,7 @@ const CaptainLogin = () => {
             />
           </div>
 
-          {/* Login button with hover animation */}
+          {/* Login button */}
           <button
             type="submit"
             className="group relative z-0 h-10 overflow-hidden overflow-x-hidden rounded-md flex item-center justify-center cursor-pointer px-2 w-84 m-3 mx-auto bg-black text-white py-2 md:justify-center md:h-12 md:w-120 md:mx-auto md:py-3 md:mt-10"

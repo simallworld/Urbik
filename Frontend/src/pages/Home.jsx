@@ -49,7 +49,7 @@ const Home = () => {
     const { socket } = useContext(SocketContext)
     const { user } = useContext(UserDataContext)
 
-    // JOIN and socket listeners: put inside useEffect and cleanup listeners on unmount
+    // JOIN and socket listeners: put inside useEffect and cleanup listeners  unmounton
     useEffect(() => {
         if (!socket || !user) return
 
