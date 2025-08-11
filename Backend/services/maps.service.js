@@ -1,4 +1,5 @@
 import axios from "axios";
+import captainModel from "../models/captain.model.js";
 
 // Service to get Address Coordinates
 const getAddressCoordinate = async (address) => {
@@ -75,15 +76,22 @@ const getAutoCompleteSuggestions = async (input) => {
   }
 };
 
-const getCaptainsInTheRadius = async (ltd, lng, radius) => {
+const getCaptainsInTheRadius = async (lat, lng, radius) => {
   //Radius in Kms
+  console.log(`Finding captains near lat: ${lat}, lng: ${lng}, radius: ${radius}km`);
+  
   const captains = await captainModel.find({
     location: {
       $geoWithin: {
-        $centerSphere: [[ltd, ln], radius / 6371],
+        $centerSphere: [[lng, lat], radius / 6371],
       },
     },
+    status: "active", // Only find active captains
+    socketId: { $exists: true, $ne: null } // Only captains with valid socket connections
   });
+  
+  console.log(`Found ${captains.length} active captains in radius`);
+  return captains;
 };
 
 export default {

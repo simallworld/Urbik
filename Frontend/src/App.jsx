@@ -1,5 +1,5 @@
 // Import necessary components and routes from react-router
-import { Routes, Route } from "react-router";
+import { Routes, Route } from "react-router-dom";
 // Import page components for different routes
 import SplashScreen from "./pages/SplashScreen";
 import UserSignup from "./pages/UserSignup";

@@ -12,7 +12,7 @@ const UserLogout = () => {
   // Effect to handle logout process when component mounts
   useEffect(() => {
     // Make API call to logout endpoint
-    axios.get(`${import.meta.env.VITE_API_URL}/users/logout`, {
+    axios.get(`${import.meta.env.VITE_BASE_URL}/users/logout`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

@@ -7,26 +7,28 @@ const CaptainLogout = () => {
     const navigate = useNavigate();
 
     // Get captain's token from localStorage
-    const token = localStorage.getItem("captain-token");
+    const token = localStorage.getItem("token");
 
     useEffect(() => {
         // Send logout request to invalidate the token on server
-        axios.get(`${import.meta.env.VITE_API_URL}/captains/logout`, {
+        axios.get(`${import.meta.env.VITE_BASE_URL}/captains/logout`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         }).then((response) => {
             if (response.status === 200) {
                 // On successful logout, remove token and redirect
-                localStorage.removeItem("captain-token");
+                localStorage.removeItem("token");
                 navigate("/captain-login")
             }
         }).catch(() => {
+            // Handle any errors during logout
+            console.error("Logout failed:", error);
             // If logout fails, still remove token and redirect
-            localStorage.removeItem("captain-token");
-            navigate("/captain-login")
+            localStorage.removeItem("token");
+            navigate("/captain-login");
         });
-    }, [navigate, token]); // Dependencies for useEffect
+    }, []); // Dependencies for useEffect
 
     // Show simple message while logout is processing
     return (

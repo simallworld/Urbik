@@ -54,7 +54,9 @@ const UserSignup = () => {
       }
     } catch (error) {
       console.error("Registration failed:", error.response?.data || error.message);
-      // TODO: Add user-friendly error message display
+
+      //  Added user-friendly error message display
+      alert(error.response?.data?.message || "Registration failed")
     }
 
     // Clear form fields after submission

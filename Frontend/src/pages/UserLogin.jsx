@@ -50,11 +50,11 @@ const UserLogin = () => {
 
           <div className='flex flex-col rounded px-3 mt-15 md:mt-10 gap-2'>
             {/* Error Message */}
-          {errorMsg && (
-            <p className="bg-red-100 text-red-700 border border-red-400 rounded py-2 mb-5 text-sm md:text-base text-center">
-              {errorMsg}
-            </p>
-          )}
+            {errorMsg && (
+              <p className="bg-red-100 text-red-700 border border-red-400 rounded py-2 mb-5 text-sm md:text-base text-center">
+                {errorMsg}
+              </p>
+            )}
             <h3 className='md:text-xl text-sm font-bold'>What's your email</h3>
             <input
               className='bg-gray-200 md:text-xl p-2 md:p-2 rounded'

@@ -103,7 +103,7 @@ const confirmRide = async ({ rideId, captain }) => {
 
   const ride = await rideModel
     .findOne({
-      _id: ride,
+      _id: rideId,
     })
     .populate("user")
     .populate("captain")

@@ -66,8 +66,12 @@ router.post(
   [
     body("email").isEmail().withMessage("Invalid Email"),
     body("password")
-      .isLength({ min: 6 })
-      .withMessage("Password must be at least 6 characters"),
+      .isLength({ min: 8 })
+      .withMessage("Password must be at least 8 characters long")
+      .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])/)
+      .withMessage(
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+      ),
   ],
   captainController.loginCaptain
 );

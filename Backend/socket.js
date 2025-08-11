@@ -18,10 +18,17 @@ function initializeSocket(server) {
     // Join event
     socket.on("join", async ({ userId, userType }) => {
       try {
+        console.log(`${userType} ${userId} joining with socket ${socket.id}`);
+        
         if (userType === "user") {
           await userModel.findByIdAndUpdate(userId, { socketId: socket.id });
+          console.log(`User ${userId} socket updated`);
         } else if (userType === "captain") {
-          await captainModel.findByIdAndUpdate(userId, { socketId: socket.id });
+          await captainModel.findByIdAndUpdate(userId, {
+            socketId: socket.id,
+            status: "active" // Mark captain as active when they connect
+          });
+          console.log(`Captain ${userId} socket updated and marked as active`);
         }
       } catch (err) {
         console.error("Error updating socketId:", err);
@@ -34,7 +41,7 @@ function initializeSocket(server) {
       try {
         if (
           !location ||
-          typeof location.ltd !== "number" ||
+          typeof location.lat !== "number" ||
           typeof location.lng !== "number"
         ) {
           return socket.emit("error", { message: "Invalid location data" });
@@ -42,7 +49,7 @@ function initializeSocket(server) {
 
         await captainModel.findByIdAndUpdate(userId, {
           location: {
-            lat: location.ltd,
+            lat: location.lat,
             lng: location.lng,
           },
         });
@@ -52,8 +59,19 @@ function initializeSocket(server) {
       }
     });
 
-    socket.on("disconnect", () => {
+    socket.on("disconnect", async () => {
       console.log(`Client disconnected: ${socket.id}`);
+      
+      // Mark captain as inactive when they disconnect
+      try {
+        await captainModel.findOneAndUpdate(
+          { socketId: socket.id },
+          { status: "inactive", socketId: null }
+        );
+        console.log(`Captain with socket ${socket.id} marked as inactive`);
+      } catch (err) {
+        console.error("Error updating captain status on disconnect:", err);
+      }
     });
   });
 }

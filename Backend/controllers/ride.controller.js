@@ -22,19 +22,29 @@ const createRide = async (req, res) => {
     res.status(201).json(ride);
 
     const pickupCoordinates = await mapService.getAddressCoordinate(pickup);
+    console.log('Pickup coordinates:', pickupCoordinates);
 
     const captainsInRadius = await mapService.getCaptainsInTheRadius(
-      pickupCoordinates.ltd,
+      pickupCoordinates.lat,
       pickupCoordinates.lng,
       2
     );
+    
+    console.log(`Found ${captainsInRadius.length} captains in radius`);
+    
     ride.otp = "";
 
     const rideWithUser = await rideModel
       .findOne({ _id: ride._id })
       .populate("user");
 
-    captainsInRadius.map((captain) => {
+    if (captainsInRadius.length === 0) {
+      console.log('No captains found in radius for ride:', ride._id);
+      return;
+    }
+
+    captainsInRadius.forEach((captain) => {
+      console.log(`Sending ride notification to captain ${captain._id} with socketId: ${captain.socketId}`);
       sendMessageToSocketId(captain.socketId, {
         event: "new-ride",
         data: rideWithUser,
@@ -64,7 +74,7 @@ const confirmRide = async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const { rideId } = req.query;
+  const { rideId } = req.body;
   try {
     const ride = await rideService.confirmRide({
       rideId,

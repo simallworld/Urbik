@@ -38,7 +38,7 @@ const CaptainSignup = () => {
     const capacityNumber = vehicleCapacity ? Number(vehicleCapacity) : null;
 
     // Prepare data object for API request
-    const captainData = {
+    const newCaptain = {
       fullName: {
         firstName: fname,
         lastName: lname
@@ -59,15 +59,15 @@ const CaptainSignup = () => {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/captains/register`,
-        captainData
+        newCaptain
       )
 
       if (response.status === 201 || response.status === 200) {
         const data = response.data
         // Update global captain state, if backend returns captain object
-        if (data.captain) setCaptain(data.captain)
+        setCaptain(data.captain)
         // Store authentication token if sent
-        if (data.token) localStorage.setItem("token", data.token)
+        localStorage.setItem("token", data.token)
         // Redirect to captain's home page
         navigate('/captain-home');
         // return;
@@ -76,7 +76,7 @@ const CaptainSignup = () => {
       // Helpful error output for debugging — check browser console / network tab
       console.error("Registration failed:", error.response?.data || error.message);
       // optionally show an alert or some UI message here
-      // alert(error.response?.data?.message || "Registration failed")
+      alert(error.response?.data?.message || "Registration failed")
     }
 
     // Reset form fields after submission (kept as your original)
@@ -152,7 +152,7 @@ const CaptainSignup = () => {
                   <option value="car">Car</option>
                   <option value="bike">Bike</option>
                   <option value="auto">Auto</option>
-                  <option value="e-rikshaw">E-Rikshaw</option>
+                  <option value="e-rickshaw">E-Rickshaw</option>
                 </select>
               </div>
             </div>

@@ -9,6 +9,7 @@ import ConfirmRidePopUp from '../components/ConfirmRidePopUp';
 import { SocketContext } from '../context/SocketContext';
 import { CaptainDataContext } from '../context/CaptainContext';
 import LiveTracking from '../components/LiveTracking';
+import axios from 'axios';
 
 // This component serves as the main dashboard for captains after logging in.
 // It displays relevant information and controls for captain operations.
@@ -23,27 +24,28 @@ const CaptainHome = () => {
     const [ride, setRide] = useState(null);
 
     const { socket } = useContext(SocketContext);
-    const { captainData } = useContext(CaptainDataContext);
+    const { captain } = useContext(CaptainDataContext);
 
     // Join room when captain logs in
     useEffect(() => {
-        if (captainData?._id) {
+        if (captain?._id) {
+            console.log('Captain joining socket room:', captain._id);
             socket.emit('join', {
-                userId: captainData._id,
+                userId: captain._id,
                 userType: 'captain'
             });
         }
-    }, [captainData, socket]);
+    }, [captain, socket]);
 
     // Update location
     useEffect(() => {
         const updateLocation = () => {
-            if (navigator.geolocation && captainData?._id) {
+            if (navigator.geolocation && captain?._id) {
                 navigator.geolocation.getCurrentPosition(position => {
                     socket.emit('update-location-captain', {
-                        userId: captainData._id,
+                        userId: captain._id,
                         location: {
-                            ltd: position.coords.latitude,  // fixed from ltd
+                            lat: position.coords.latitude,
                             lng: position.coords.longitude
                         }
                     });
@@ -54,26 +56,42 @@ const CaptainHome = () => {
         const interval = setInterval(updateLocation, 10000); // update every 10s
         updateLocation(); // initial call
         return () => clearInterval(interval);
-    }, [captainData, socket]);
+    }, [captain, socket]);
 
-    socket.on('new-ride', (data) => {
-        // Handle incoming ride requests
-        setRide(data)
-        setRidePopupPanel(true);
-    });
+    // Socket event listeners
+    useEffect(() => {
+        const handleNewRide = (data) => {
+            console.log('Received new ride notification:', data);
+            // Handle incoming ride requests
+            setRide(data);
+            setRidePopupPanel(true);
+        };
+
+        console.log('Setting up new-ride listener');
+        socket.on('new-ride', handleNewRide);
+
+        // Cleanup
+        return () => {
+            console.log('Cleaning up new-ride listener');
+            socket.off('new-ride', handleNewRide);
+        };
+    }, [socket]);
 
     async function confirmRide() {
         // Function to confirm the ride
-        const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/confirm`, {
-            captainId: captain._id,
-            rideId: ride._id
-        }, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
-        });
-        setRidePopupPanel(false);
-        setConfirmRidePopupPanel(true);
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/confirm`, {
+                rideId: ride._id
+            }, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            setRidePopupPanel(false);
+            setConfirmRidePopupPanel(true);
+        } catch (error) {
+            console.error('Error confirming ride:', error);
+        }
     }
 
     // Animation for ride popup
@@ -94,13 +112,13 @@ const CaptainHome = () => {
 
     return (
         <div className='h-screen'>
-            <div>
-                <h1 className='absolute top-3 left-3 text-black md:text-black text-3xl md:text-4xl font-bold'>
+            <div className="pointer-events-none">
+                <h1 className='absolute z-20 top-3 left-3 text-black md:text-black text-3xl md:text-4xl font-bold pointer-events-auto'>
                     <Link to="/" className='cursor-pointer'>Urbik</Link>
                 </h1>
                 <Link
                     to="/captain/logout"
-                    className='fixed top-3 right-3 cursor-pointer h-10 w-10 bg-white flex items-center justify-center rounded-full'
+                    className='fixed z-20 top-3 right-3 cursor-pointer h-10 w-10 bg-white flex items-center justify-center rounded-full pointer-events-auto'
                 >
                     <i className='text-2xl ri-logout-box-r-line'></i>
                 </Link>
@@ -122,7 +140,7 @@ const CaptainHome = () => {
             {/* Ride popup */}
             <div
                 ref={ridePopupPanelRef}
-                className="fixed z-10 bottom-0 bg-white px-3 py-10 pt-12 w-full translate-y-full"
+                className="fixed z-30 bottom-0 bg-white px-3 py-10 pt-12 w-full translate-y-full pointer-events-auto"
             >
                 <RidePopUp
                     ride={ride}
@@ -135,7 +153,7 @@ const CaptainHome = () => {
             {/* Confirm ride popup */}
             <div
                 ref={confirmRidePopupPanelRef}
-                className="h-screen fixed z-10 bottom-0 bg-white px-3 py-10 pt-12 w-full translate-y-full"
+                className="h-screen fixed z-30 bottom-0 bg-white px-3 py-10 pt-12 w-full translate-y-full pointer-events-auto"
             >
                 <ConfirmRidePopUp
                     ride={ride}

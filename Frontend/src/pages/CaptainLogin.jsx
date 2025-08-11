@@ -11,7 +11,7 @@ const CaptainLogin = () => {
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState(""); // NEW: Error message state
 
-  const { setCaptain } = useContext(CaptainDataContext)
+  const { captain, setCaptain } = useContext(CaptainDataContext)
   const navigate = useNavigate();
 
   /**
@@ -19,8 +19,8 @@ const CaptainLogin = () => {
    */
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "email") setEmail(value);
-    if (name === "password") setPassword(value);
+    setEmail(name === "email" ? value : email);
+    setPassword(name === "password" ? value : password);
   }
 
   /**
@@ -28,7 +28,7 @@ const CaptainLogin = () => {
    */
   const submitHandler = async (e) => {
     e.preventDefault();
-    setErrorMsg(""); // Clear old error before sending request
+    setErrorMsg(""); // Clear old errors before new request
 
     const captainData = { email, password }
 

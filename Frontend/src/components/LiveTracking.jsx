@@ -57,7 +57,23 @@ const LiveTracking = () => {
 
     // Start tracking location every 10 seconds
     const startLocationTracking = useCallback(() => {
-        if (!navigator.geolocation) return
+        if (!navigator.geolocation) return;
+
+        let isUserInteracting = false;
+
+        if (map) {
+            // Detect when the user starts dragging
+            map.addListener("dragstart", () => {
+                isUserInteracting = true;
+            });
+
+            // Optional: after drag ends, you can re-enable auto-follow after some delay
+            map.addListener("dragend", () => {
+                setTimeout(() => {
+                    isUserInteracting = false;
+                }, 10000); // resume following after 10 sec of no dragging
+            });
+        }
 
         const updateLocation = () => {
             navigator.geolocation.getCurrentPosition(
@@ -65,21 +81,26 @@ const LiveTracking = () => {
                     const pos = {
                         lat: position.coords.latitude,
                         lng: position.coords.longitude
+                    };
+                    setCurrentPosition(pos);
+
+                    // ✅ Only pan to position if the user is not dragging
+                    if (map && !isUserInteracting) {
+                        map.panTo(pos);
                     }
-                    setCurrentPosition(pos)
-                    if (map) map.panTo(pos)
                 },
                 (err) => {
-                    console.error('Error updating location:', err)
+                    console.error("Error updating location:", err);
                 },
                 { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
-            )
-        }
+            );
+        };
 
-        updateLocation()
-        const id = setInterval(updateLocation, 10000)
-        setIntervalId(id)
-    }, [map])
+        updateLocation();
+        const id = setInterval(updateLocation, 10000);
+        setIntervalId(id);
+    }, [map]);
+
 
     // Stop tracking
     const stopLocationTracking = useCallback(() => {
@@ -143,6 +164,8 @@ const LiveTracking = () => {
                 onLoad={(map) => setMap(map)}
                 onUnmount={() => setMap(null)}
                 options={{
+                    draggable: true,                // ✅ Allow dragging
+                    gestureHandling: "greedy",      // ✅ Ensures touch drag works on mobile
                     zoomControl: true,
                     streetViewControl: false,
                     mapTypeControl: false,
@@ -179,7 +202,7 @@ const LiveTracking = () => {
             </GoogleMap>
 
             {/* Live indicator */}
-            <div className="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg">
+            <div className="absolute top-4 right-14 bg-white rounded-full p-2 shadow-lg">
                 <div className="flex items-center space-x-2">
                     <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                     <span className="text-sm text-gray-600">Live</span>
@@ -194,7 +217,7 @@ const LiveTracking = () => {
                         map.setZoom(15)
                     }
                 }}
-                className="absolute bottom-4 right-4 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-shadow"
+                className="absolute bottom-6 flex justify-center items-center w-9 h-9 right-14 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-shadow"
                 title="Center on my location"
             >
                 <i className="ri-focus-3-line text-xl text-gray-700"></i>
