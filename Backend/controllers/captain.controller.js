@@ -118,9 +118,40 @@ async function logoutCaptain(req, res, next) {
   }
 }
 
+/**
+ * Update captain location
+ * @param {Object} req - Express request object containing location data
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Object} JSON response confirming location update
+ */
+async function updateLocation(req, res, next) {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { lat, lng } = req.body;
+    const captainId = res.captain._id;
+
+    const updatedCaptain = await captainService.updateCaptainLocation(captainId, lat, lng);
+
+    res.status(200).json({
+      message: "Location updated successfully",
+      captain: updatedCaptain,
+      location: { lat, lng }
+    });
+  } catch (error) {
+    console.error('Error updating captain location:', error);
+    next(error);
+  }
+}
+
 export default {
   registerCaptain,
   loginCaptain,
   getCaptainProfile,
   logoutCaptain,
+  updateLocation,
 };

@@ -64,4 +64,56 @@ async function createCaptain({
   }
 }
 
-export default { createCaptain };
+const updateCaptainLocation = async (captainId, lat, lng) => {
+  if (!captainId || typeof lat !== 'number' || typeof lng !== 'number') {
+    throw new Error('Invalid parameters for location update');
+  }
+
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+    throw new Error('Coordinates out of valid range');
+  }
+
+  try {
+    const captain = await captainModel.findByIdAndUpdate(
+      captainId,
+      {
+        location: {
+          type: 'Point',
+          coordinates: [lng, lat], // GeoJSON format: [longitude, latitude]
+          lat: lat, // Legacy format
+          lng: lng, // Legacy format
+        },
+        status: 'active' // Mark captain as active when location is set
+      },
+      { new: true }
+    );
+
+    if (!captain) {
+      throw new Error('Captain not found');
+    }
+
+    return captain;
+  } catch (error) {
+    console.error('Error updating captain location:', error);
+    throw error;
+  }
+};
+
+const getCaptainById = async (captainId) => {
+  if (!captainId) {
+    throw new Error('Captain ID is required');
+  }
+
+  try {
+    const captain = await captainModel.findById(captainId);
+    if (!captain) {
+      throw new Error('Captain not found');
+    }
+    return captain;
+  } catch (error) {
+    console.error('Error fetching captain:', error);
+    throw error;
+  }
+};
+
+export default { createCaptain, updateCaptainLocation, getCaptainById };

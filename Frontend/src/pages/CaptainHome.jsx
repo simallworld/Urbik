@@ -60,20 +60,48 @@ const CaptainHome = () => {
 
     // Socket event listeners
     useEffect(() => {
+        if (!socket) {
+            console.warn('Socket not available for event listeners');
+            return;
+        }
+
         const handleNewRide = (data) => {
-            console.log('Received new ride notification:', data);
+            console.log('🚗 Received new ride notification:', data);
+            if (!data) {
+                console.error('Received empty ride data');
+                return;
+            }
             // Handle incoming ride requests
             setRide(data);
             setRidePopupPanel(true);
+            console.log('✅ Ride popup panel opened');
         };
 
-        console.log('Setting up new-ride listener');
+        const handleError = (error) => {
+            console.error('Socket error:', error);
+        };
+
+        const handleConnect = () => {
+            console.log('✅ Socket connected successfully');
+        };
+
+        const handleDisconnect = () => {
+            console.warn('⚠️ Socket disconnected');
+        };
+
+        console.log('Setting up socket event listeners for captain');
         socket.on('new-ride', handleNewRide);
+        socket.on('error', handleError);
+        socket.on('connect', handleConnect);
+        socket.on('disconnect', handleDisconnect);
 
         // Cleanup
         return () => {
-            console.log('Cleaning up new-ride listener');
+            console.log('Cleaning up socket event listeners');
             socket.off('new-ride', handleNewRide);
+            socket.off('error', handleError);
+            socket.off('connect', handleConnect);
+            socket.off('disconnect', handleDisconnect);
         };
     }, [socket]);
 

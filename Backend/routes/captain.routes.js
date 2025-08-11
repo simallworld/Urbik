@@ -102,5 +102,26 @@ router.get(
   captainController.logoutCaptain
 );
 
+/**
+ * Captain Location Update Route
+ * POST /api/captain/update-location
+ *
+ * Protected route - Requires valid authentication token
+ * Updates the captain's current location for ride matching
+ */
+router.post(
+  "/update-location",
+  authMiddleware.authCaptain,
+  [
+    body("lat")
+      .isFloat({ min: -90, max: 90 })
+      .withMessage("Latitude must be between -90 and 90"),
+    body("lng")
+      .isFloat({ min: -180, max: 180 })
+      .withMessage("Longitude must be between -180 and 180"),
+  ],
+  captainController.updateLocation
+);
+
 // Export the router for use in the main application
 export default router;

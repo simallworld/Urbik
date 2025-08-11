@@ -1,2 +1,8 @@
 .env 
 node_modules
+utils
+
+# Temporary testing files-
+test-captain-fix.js
+debug-captain-issue.js
+CAPTAIN-ISSUE-SOLUTION.md

@@ -37,7 +37,7 @@ const captainSchema = new mongoose.Schema(
     },
     socketId: {
       type: String,
-      sparse: true,
+      sparse: true, // This automatically creates a sparse index
     },
     status: {
       type: String,
@@ -75,7 +75,25 @@ const captainSchema = new mongoose.Schema(
       },
     },
     location: {
-      lat: { // fixed typo: ltd -> lat
+      type: {
+        type: String,
+        enum: ['Point'],
+        default: 'Point'
+      },
+      coordinates: {
+        type: [Number], // [longitude, latitude]
+        required: false, // Will be set when captain goes online
+        validate: {
+          validator: function(coords) {
+            if (!coords || coords.length !== 2) return true; // Allow empty for offline captains
+            const [lng, lat] = coords;
+            return lng >= -180 && lng <= 180 && lat >= -90 && lat <= 90;
+          },
+          message: 'Invalid coordinates format. Expected [longitude, latitude]'
+        }
+      },
+      // Keep legacy lat/lng for backward compatibility
+      lat: {
         type: Number,
         min: [-90, "Latitude must be between -90 and 90"],
         max: [90, "Latitude must be between -90 and 90"],
@@ -94,8 +112,12 @@ const captainSchema = new mongoose.Schema(
   }
 );
 
-// 2dsphere for location
-captainSchema.index({ location: "2dsphere" });
+// 2dsphere index for GeoJSON location
+captainSchema.index({ "location.coordinates": "2dsphere" });
+
+// Additional indexes for better performance
+captainSchema.index({ status: 1, "location.coordinates": "2dsphere" });
+// Note: socketId index is automatically created by sparse: true in schema definition
 
 // generate token
 captainSchema.methods.generateAuthToken = function () {

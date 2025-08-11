@@ -200,6 +200,13 @@ const Home = () => {
     // create ride -> call API and update UI states accordingly
     async function createRide() {
         try {
+            console.log('Creating ride with data:', {
+                userId: user._id,
+                pickup,
+                destination,
+                vehicleType,
+            });
+
             const response = await axios.post(
                 `${import.meta.env.VITE_BASE_URL}/rides/create`,
                 {
@@ -216,6 +223,7 @@ const Home = () => {
             );
 
             const createdRide = response.data;
+            console.log('Ride created successfully:', createdRide);
             setRide(createdRide);
 
             // Close panels and show "looking for driver" panel
@@ -224,11 +232,17 @@ const Home = () => {
             setVehicleFound(true);
 
             // Optionally notify server via socket
-            if (socket) socket.emit("ride-created", createdRide);
+            if (socket) {
+                console.log('Emitting ride-created event via socket');
+                socket.emit("ride-created", createdRide);
+            } else {
+                console.warn('Socket not available for ride-created event');
+            }
 
             return createdRide;
         } catch (err) {
             console.error("create ride error", err);
+            alert('Failed to create ride. Please try again.');
             throw err;
         }
     }

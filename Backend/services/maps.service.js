@@ -80,18 +80,86 @@ const getCaptainsInTheRadius = async (lat, lng, radius) => {
   //Radius in Kms
   console.log(`Finding captains near lat: ${lat}, lng: ${lng}, radius: ${radius}km`);
   
-  const captains = await captainModel.find({
-    location: {
-      $geoWithin: {
-        $centerSphere: [[lng, lat], radius / 6371],
+  if (!lat || !lng || typeof lat !== 'number' || typeof lng !== 'number') {
+    throw new Error('Invalid coordinates provided');
+  }
+
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+    throw new Error('Coordinates out of valid range');
+  }
+
+  try {
+    // First try with new GeoJSON format
+    let captains = await captainModel.find({
+      "location.coordinates": {
+        $geoWithin: {
+          $centerSphere: [[lng, lat], radius / 6371], // radius in radians
+        },
       },
-    },
-    status: "active", // Only find active captains
-    socketId: { $exists: true, $ne: null } // Only captains with valid socket connections
-  });
-  
-  console.log(`Found ${captains.length} active captains in radius`);
-  return captains;
+      status: "active",
+      socketId: { $exists: true, $ne: null }
+    });
+
+    console.log(`Found ${captains.length} captains with GeoJSON location format`);
+
+    // If no captains found with GeoJSON, try legacy format for backward compatibility
+    if (captains.length === 0) {
+      console.log('No captains found with GeoJSON format, trying legacy format...');
+      
+      captains = await captainModel.find({
+        $and: [
+          { "location.lat": { $exists: true, $ne: null } },
+          { "location.lng": { $exists: true, $ne: null } },
+          {
+            $expr: {
+              $lte: [
+                {
+                  $multiply: [
+                    6371, // Earth's radius in km
+                    {
+                      $acos: {
+                        $add: [
+                          {
+                            $multiply: [
+                              { $sin: { $multiply: [{ $divide: [lat * Math.PI, 180] }, 1] } },
+                              { $sin: { $multiply: [{ $divide: [{ $multiply: ["$location.lat", Math.PI] }, 180] }, 1] } }
+                            ]
+                          },
+                          {
+                            $multiply: [
+                              { $cos: { $multiply: [{ $divide: [lat * Math.PI, 180] }, 1] } },
+                              { $cos: { $multiply: [{ $divide: [{ $multiply: ["$location.lat", Math.PI] }, 180] }, 1] } },
+                              { $cos: { $multiply: [{ $divide: [{ $subtract: [{ $multiply: ["$location.lng", Math.PI] }, lng * Math.PI] }, 180] }, 1] } }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                radius
+              ]
+            }
+          },
+          { status: "active" },
+          { socketId: { $exists: true, $ne: null } }
+        ]
+      });
+
+      console.log(`Found ${captains.length} captains with legacy location format`);
+    }
+
+    // Log captain details for debugging
+    captains.forEach(captain => {
+      console.log(`Captain ${captain._id}: status=${captain.status}, socketId=${captain.socketId}, location=${JSON.stringify(captain.location)}`);
+    });
+
+    return captains;
+
+  } catch (error) {
+    console.error('Error finding captains in radius:', error);
+    throw new Error(`Failed to find captains: ${error.message}`);
+  }
 };
 
 export default {
