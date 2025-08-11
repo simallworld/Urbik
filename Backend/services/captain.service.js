@@ -50,6 +50,7 @@ async function createCaptain({
         capacity: capacityNum,
         vehicleType,
       },
+      // Don't include location field - it will be set when captain goes online
     });
 
     // Model's toJSON removes password; return created document

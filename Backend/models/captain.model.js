@@ -78,14 +78,17 @@ const captainSchema = new mongoose.Schema(
       type: {
         type: String,
         enum: ['Point'],
-        default: 'Point'
+        required: false
       },
       coordinates: {
         type: [Number], // [longitude, latitude]
         required: false, // Will be set when captain goes online
         validate: {
           validator: function(coords) {
-            if (!coords || coords.length !== 2) return true; // Allow empty for offline captains
+            // Allow undefined for offline captains
+            if (coords === undefined || coords === null) return true;
+            // If coordinates exist, they must have exactly 2 elements
+            if (!Array.isArray(coords) || coords.length !== 2) return false;
             const [lng, lat] = coords;
             return lng >= -180 && lng <= 180 && lat >= -90 && lat <= 90;
           },
@@ -112,11 +115,11 @@ const captainSchema = new mongoose.Schema(
   }
 );
 
-// 2dsphere index for GeoJSON location
-captainSchema.index({ "location.coordinates": "2dsphere" });
+// Create sparse 2dsphere index for GeoJSON location (only for documents with coordinates)
+captainSchema.index({ "location.coordinates": "2dsphere" }, { sparse: true });
 
 // Additional indexes for better performance
-captainSchema.index({ status: 1, "location.coordinates": "2dsphere" });
+captainSchema.index({ status: 1, "location.coordinates": "2dsphere" }, { sparse: true });
 // Note: socketId index is automatically created by sparse: true in schema definition
 
 // generate token
