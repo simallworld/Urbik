@@ -317,6 +317,7 @@ const Home = () => {
                         destinationSuggestions={destinationSuggestions}
                         setPickupSuggestions={setPickupSuggestions}
                         setDestinationSuggestions={setDestinationSuggestions}
+findTrip={findTrip}
                     />
                 </div>
             </div>

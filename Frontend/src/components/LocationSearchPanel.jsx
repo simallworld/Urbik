@@ -21,6 +21,9 @@ const LocationSearchPanel = ({
   // optional current values to decide whether to open vehicle panel after selection
   pickup,
   destination,
+
+  // fare calculation function passed from Home
+  findTrip,
 }) => {
   // which field is active (supports both prop names)
   const active = activeField ?? focused
@@ -35,7 +38,7 @@ const LocationSearchPanel = ({
     return s.description ?? s.place_name ?? s.formatted_address ?? s.name ?? s.text ?? String(s)
   }
 
-  const handlePostSelection = (value) => {
+  const handlePostSelection = async (value) => {
     // clear suggestions if setters exist
     if (active === 'pickup' && typeof setPickupSuggestions === 'function') setPickupSuggestions([])
     if (active === 'destination' && typeof setDestinationSuggestions === 'function') setDestinationSuggestions([])
@@ -43,11 +46,12 @@ const LocationSearchPanel = ({
     // close search panel
     if (typeof setPanelOpen === 'function') setPanelOpen(false)
 
-    // if both pickup+destination are now present, open vehicle panel (optional UX)
+    // if both pickup+destination are now present, fetch fare and open vehicle panel
     const newPickup = active === 'pickup' ? value : pickup
     const newDestination = active === 'destination' ? value : destination
-    if (newPickup && newDestination && typeof setVehiclePanel === 'function') {
-      setVehiclePanel(true)
+    if (newPickup && newDestination && typeof findTrip === 'function') {
+      // Call findTrip to fetch fare and open vehicle panel
+      await findTrip()
     }
   }
 
