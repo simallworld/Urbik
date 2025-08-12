@@ -28,7 +28,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-
-# Testing files
-test-ride-flow.js
