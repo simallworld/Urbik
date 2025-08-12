@@ -103,7 +103,7 @@ async function loginUser(req, res, next) {
 async function getUserProfile(req, res, next) {
   try {
     // Return the user object attached by the auth middleware
-    res.status(200).json(res.user);
+    res.status(200).json(req.user);
   } catch (error) {
     next(error);
   }

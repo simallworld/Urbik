@@ -15,149 +15,70 @@ function initializeSocket(server) {
   io.on("connection", (socket) => {
     console.log(`Client connected: ${socket.id}`);
 
-    // Join event
-    socket.on("join", async ({ userId, userType }) => {
+    socket.on("join", async (data) => {
       try {
-        console.log(`${userType} ${userId} joining with socket ${socket.id}`);
-        
+        const { userId, userType } = data;
+
+        if (!userId || !userType) {
+          return socket.emit("error", { message: "userId and userType are required" });
+        }
+
         if (userType === "user") {
           await userModel.findByIdAndUpdate(userId, { socketId: socket.id });
-          console.log(`User ${userId} socket updated`);
         } else if (userType === "captain") {
-          await captainModel.findByIdAndUpdate(userId, {
-            socketId: socket.id,
-            status: "active" // Mark captain as active when they connect
-          });
-          console.log(`Captain ${userId} socket updated and marked as active`);
+          await captainModel.findByIdAndUpdate(userId, { socketId: socket.id });
+        } else {
+          return socket.emit("error", { message: "Invalid userType" });
         }
-      } catch (err) {
-        console.error("Error updating socketId:", err);
-        socket.emit("error", { message: "Failed to join" });
+      } catch (error) {
+        console.error("Error in join event:", error);
+        socket.emit("error", { message: "Failed to join room" });
       }
     });
 
-    // Update captain's location
-    socket.on("update-location-captain", async ({ userId, location }) => {
+    socket.on("update-location-captain", async (data) => {
       try {
-        if (
-          !location ||
-          typeof location.lat !== "number" ||
-          typeof location.lng !== "number"
-        ) {
+        const { userId, location } = data;
+
+        if (!userId) {
+          return socket.emit("error", { message: "userId is required" });
+        }
+
+        if (!location || !location.lat || !location.lng) {
           return socket.emit("error", { message: "Invalid location data" });
         }
 
-        // Validate coordinates
-        if (location.lat < -90 || location.lat > 90 || location.lng < -180 || location.lng > 180) {
-          return socket.emit("error", { message: "Invalid coordinate values" });
-        }
-
-        console.log(`Updating location for captain ${userId}: lat=${location.lat}, lng=${location.lng}`);
-
-        // Update with both GeoJSON format and legacy lat/lng for compatibility
-        const updateData = {
-          location: {
-            type: 'Point',
-            coordinates: [location.lng, location.lat], // GeoJSON format: [longitude, latitude]
-            lat: location.lat, // Legacy format
-            lng: location.lng, // Legacy format
-          },
-          status: "active" // Ensure captain is active when updating location
-        };
-
-        const updatedCaptain = await captainModel.findByIdAndUpdate(
-          userId,
-          updateData,
-          { new: true }
-        );
-
-        if (!updatedCaptain) {
-          return socket.emit("error", { message: "Captain not found" });
-        }
-
-        console.log(`Location updated successfully for captain ${userId}`);
-        socket.emit("location-updated", {
-          message: "Location updated successfully",
+        await captainModel.findByIdAndUpdate(userId, {
           location: {
             lat: location.lat,
-            lng: location.lng
-          }
+            lng: location.lng,
+          },
         });
-
-      } catch (err) {
-        console.error("Error updating location:", err);
+      } catch (error) {
+        console.error("Error updating captain location:", error);
         socket.emit("error", { message: "Failed to update location" });
       }
     });
 
-    // Handle captain going offline
-    socket.on("captain-offline", async ({ userId }) => {
-      try {
-        console.log(`Captain ${userId} going offline`);
-        
-        await captainModel.findByIdAndUpdate(userId, {
-          status: "inactive",
-          socketId: null
-        });
-        
-        console.log(`Captain ${userId} marked as inactive`);
-        socket.emit("status-updated", { status: "inactive" });
-      } catch (err) {
-        console.error("Error updating captain status:", err);
-        socket.emit("error", { message: "Failed to update status" });
-      }
-    });
-
-    socket.on("disconnect", async () => {
+    socket.on("disconnect", () => {
       console.log(`Client disconnected: ${socket.id}`);
-      
-      // Mark captain as inactive when they disconnect
-      try {
-        const captain = await captainModel.findOneAndUpdate(
-          { socketId: socket.id },
-          { status: "inactive", socketId: null },
-          { new: true }
-        );
-        
-        if (captain) {
-          console.log(`Captain ${captain._id} with socket ${socket.id} marked as inactive`);
-        } else {
-          // Could be a user disconnecting
-          await userModel.findOneAndUpdate(
-            { socketId: socket.id },
-            { socketId: null }
-          );
-          console.log(`User with socket ${socket.id} disconnected`);
-        }
-      } catch (err) {
-        console.error("Error updating status on disconnect:", err);
-      }
     });
   });
 }
 
-// Send message to specific socketId
-function sendMessageToSocketId(socketId, messageObject) {
-  console.log(`Attempting to send message to socketId: ${socketId}`, messageObject);
+const sendMessageToSocketId = (socketId, messageObject) => {
+  console.log(`Sending message to socketId: ${socketId}`, {
+    event: messageObject.event,
+    dataType: typeof messageObject.data,
+    hasData: !!messageObject.data
+  });
 
-  if (!io) {
-    console.error("Socket.io not initialized.");
-    return false;
-  }
-
-  if (!socketId) {
-    console.error("No socketId provided for message:", messageObject);
-    return false;
-  }
-
-  try {
+  if (io) {
     io.to(socketId).emit(messageObject.event, messageObject.data);
     console.log(`Message sent successfully to socketId: ${socketId}`);
-    return true;
-  } catch (error) {
-    console.error(`Failed to send message to socketId ${socketId}:`, error);
-    return false;
+  } else {
+    console.log("Socket.io not initialized.");
   }
-}
+};
 
 export { initializeSocket, sendMessageToSocketId };

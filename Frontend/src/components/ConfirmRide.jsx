@@ -3,7 +3,7 @@ import React from 'react'
 const ConfirmRide = (props) => {
     return (
         <div>
-            <h5 onClick={() => { props.setVehicleFound(false) }} className="p-1 text-center w-full absolute top-0"><i className="text-3xl font-bold text-gray-300 ri-arrow-down-wide-line"></i></h5>
+            <h5 onClick={() => { props.setConfirmRidePanel(false) }} className="p-1 text-center w-full absolute top-0"><i className="text-3xl font-bold text-gray-300 ri-arrow-down-wide-line"></i></h5>
             <h3 className="text-xl mb-2 font-semibold">Confirm your ride</h3>
 
             <div className='flex justify-between gap-3 items-center flex-col'>

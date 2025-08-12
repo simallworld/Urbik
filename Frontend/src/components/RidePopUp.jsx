@@ -1,6 +1,23 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { SocketContext } from '../context/SocketContext'
+import { CaptainDataContext } from '../context/CaptainContext'
 
 const RidePopUp = (props) => {
+    const { socket } = useContext(SocketContext);
+    const { captain } = useContext(CaptainDataContext);
+
+    const handleDeclineRide = () => {
+        // Send decline notification to server
+        socket.emit('ride-declined', {
+            rideId: props.ride?._id,
+            captainId: captain._id,
+            reason: 'Captain declined'
+        });
+        
+        // Close the popup
+        props.setRidePopupPanel(false);
+        console.log('❌ Ride declined by captain');
+    };
     return (
         <div>
             <h5 onClick={() => { props.setRidePopupPanel(false) }} className="p-1 text-center w-full absolute top-0"><i className="text-3xl font-bold text-gray-300 ri-arrow-down-wide-line"></i></h5>
@@ -51,13 +68,21 @@ const RidePopUp = (props) => {
                 </div>
 
                 <div className='w-full flex flex-row gap-2 mt-5'>
-                    <button onClick={() => {
-                        props.setRidePopupPanel(false);
-                    }} className='mt-5 w-full bg-gray-200 text-gray-700 font-semibold p-2 rounded-lg'>Ignore</button>
+                    <button
+                        onClick={handleDeclineRide}
+                        className='mt-5 w-full bg-red-500 text-white font-semibold p-2 rounded-lg hover:bg-red-600 transition-colors'
+                    >
+                        Decline
+                    </button>
 
-                    <button onClick={() => {
-                        props.confirmRide();
-                    }} className='mt-5 w-full bg-green-600 text-white font-semibold p-2 rounded-lg'>Accept</button>
+                    <button
+                        onClick={() => {
+                            props.confirmRide();
+                        }}
+                        className='mt-5 w-full bg-green-600 text-white font-semibold p-2 rounded-lg hover:bg-green-700 transition-colors'
+                    >
+                        Accept
+                    </button>
                 </div>
             </div>
         </div>

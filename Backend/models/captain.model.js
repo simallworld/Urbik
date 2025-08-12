@@ -70,7 +70,7 @@ const captainSchema = new mongoose.Schema(
       vehicleType: {
         type: String,
         required: true,
-        enum: ["car", "bike", "auto", "e-rickshaw"],
+        enum: ["car", "bike", "auto", "eRikshaw"],
         index: true,
       },
     },
@@ -139,6 +139,22 @@ captainSchema.methods.comparePassword = async function (password) {
 captainSchema.statics.hashPassword = async function (password) {
   return await bcrypt.hash(password, 10);
 };
+
+// Sync location formats pre-save
+captainSchema.pre("save", function (next) {
+  // If GeoJSON coordinates are set, sync legacy lat/lng
+  if (this.location && this.location.coordinates && this.location.coordinates.length === 2) {
+    const [lng, lat] = this.location.coordinates;
+    this.location.lat = lat;
+    this.location.lng = lng;
+  }
+  // If legacy lat/lng are set but coordinates are not, sync to GeoJSON
+  else if (this.location && this.location.lat !== undefined && this.location.lng !== undefined) {
+    this.location.type = 'Point';
+    this.location.coordinates = [this.location.lng, this.location.lat];
+  }
+  next();
+});
 
 // hash password pre-save
 captainSchema.pre("save", async function (next) {

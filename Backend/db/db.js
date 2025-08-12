@@ -7,6 +7,13 @@ import mongoose from "mongoose";
  * @returns {Promise} Mongoose connection promise
  */
 function connectToDb() {
+  // Validate that DB_CONNECT environment variable is set
+  if (!process.env.DB_CONNECT) {
+    const error = new Error("DB_CONNECT environment variable is not defined. Please check your .env file.");
+    console.error("Database connection error:", error.message);
+    throw error;
+  }
+
   // Configure Mongoose connection with recommended options
   mongoose
     .connect(process.env.DB_CONNECT, {

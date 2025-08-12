@@ -1,12 +1,15 @@
 import React from 'react'
 
 const VehiclePanel = (props) => {
+
+    const car = "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_552,w_552/v1555367310/assets/30/51e602-10bb-4e65-b122-e394d80a9c47/original/Final_UberX.png";
+
     return (
         <div>
             <h5 onClick={() => { props.setvehiclePanel(false) }} className="p-1 text-center w-full absolute top-0"><i className="text-3xl font-bold text-gray-300 ri-arrow-down-wide-line"></i></h5>
             <h3 className="text-xl mb-2 font-semibold">Select a vehicle</h3>
             <div onClick={() => { props.setConfirmRidePanel(true); props.selectVehicle("car") }} className="flex border-3 border-white active:border-black w-full mb-2 p-3 items-center justify-between rounded-lg">
-                <img className="h-20 w-20" src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_552,w_552/v1555367310/assets/30/51e602-10bb-4e65-b122-e394d80a9c47/original/Final_UberX.png" alt="" />
+                <img className="h-20 w-20" src={car} alt="" />
                 <div className="w-1/2">
                     <h4 className="font-bold text-xl">UrbikGo <span><i className="ri-user-3-fill"></i>4</span></h4>
                     <h5 className="font-medium text-md">20 mins away</h5>

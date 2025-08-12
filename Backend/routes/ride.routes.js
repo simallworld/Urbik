@@ -59,7 +59,7 @@ router.get(
 router.post(
   "/end-ride",
   authMiddleware.authCaptain,
-  query("rideId").isMongoId().withMessage("Invalid ride id"),
+  body("rideId").isMongoId().withMessage("Invalid ride id"),
   rideController.endRide
 );
 

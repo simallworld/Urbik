@@ -70,8 +70,12 @@ router.post(
     body("password")
       .notEmpty()
       .withMessage("Password is required")
-      .isLength({ min: 6 })
-      .withMessage("Password must be at least 6 characters long"),
+      .isLength({ min: 8 })
+      .withMessage("Password must be at least 8 characters long")
+      .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])/)
+      .withMessage(
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+      ),
   ],
   userController.loginUser
 );

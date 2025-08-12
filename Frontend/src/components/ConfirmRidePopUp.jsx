@@ -82,9 +82,7 @@ const ConfirmRidePopUp = (props) => {
                                 props.setRidePopupPanel(false)
                             }} className='mt-5 w-full text-center bg-red-600 text-white font-semibold p-2 rounded-lg'>Cancel</button>
 
-                            <button onClick={() => {
-
-                            }} className='mt-5 w-full text-center bg-green-600 text-white font-semibold p-2 rounded-lg'>Confirm</button>
+                            <button type="submit" className='mt-5 w-full text-center bg-green-600 text-white font-semibold p-2 rounded-lg'>Start Ride</button>
                         </div>
                     </form>
                 </div>

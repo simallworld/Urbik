@@ -177,74 +177,29 @@ const Home = () => {
 
     // Find trip -> open vehicle panel and fetch fare
     async function findTrip() {
-        setVehiclePanel(true);
-        setPanelOpen(false);
+        setVehiclePanel(true)
+        setPanelOpen(false)
 
-        try {
-            const response = await axios.get(
-                `${import.meta.env.VITE_BASE_URL}/rides/get-fare`,
-                {
-                    params: { pickup, destination },
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                }
-            );
-
-            setFare(response.data);
-        } catch (err) {
-            console.error("get fare error", err);
-        }
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`, {
+            params: { pickup, destination },
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+        setFare(response.data)
     }
 
     // create ride -> call API and update UI states accordingly
     async function createRide() {
-        try {
-            console.log('Creating ride with data:', {
-                userId: user._id,
-                pickup,
-                destination,
-                vehicleType,
-            });
-
-            const response = await axios.post(
-                `${import.meta.env.VITE_BASE_URL}/rides/create`,
-                {
-                    userId: user._id, // ✅ send userId
-                    pickup,
-                    destination,
-                    vehicleType,
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                }
-            );
-
-            const createdRide = response.data;
-            console.log('Ride created successfully:', createdRide);
-            setRide(createdRide);
-
-            // Close panels and show "looking for driver" panel
-            setConfirmRidePanel(false);
-            setVehiclePanel(false);
-            setVehicleFound(true);
-
-            // Optionally notify server via socket
-            if (socket) {
-                console.log('Emitting ride-created event via socket');
-                socket.emit("ride-created", createdRide);
-            } else {
-                console.warn('Socket not available for ride-created event');
+        const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create`, {
+            pickup,
+            destination,
+            vehicleType
+        }, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
             }
-
-            return createdRide;
-        } catch (err) {
-            console.error("create ride error", err);
-            alert('Failed to create ride. Please try again.');
-            throw err;
-        }
+        })
     }
 
     return (
@@ -331,7 +286,7 @@ const Home = () => {
                         destinationSuggestions={destinationSuggestions}
                         setPickupSuggestions={setPickupSuggestions}
                         setDestinationSuggestions={setDestinationSuggestions}
-findTrip={findTrip}
+                        findTrip={findTrip}
                     />
                 </div>
             </div>

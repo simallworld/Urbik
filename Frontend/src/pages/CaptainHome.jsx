@@ -12,35 +12,28 @@ import LiveTracking from '../components/LiveTracking';
 import axios from 'axios';
 
 // This component serves as the main dashboard for captains after logging in.
-// It displays relevant information and controls for captain operations.
-
 const CaptainHome = () => {
-
     const [ridePopupPanel, setRidePopupPanel] = useState(false);
-    const ridePopupPanelRef = useRef(null);
     const [confirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false);
-    const confirmRidePopupPanelRef = useRef(null);
 
+    const ridePopupPanelRef = useRef(null);
+    const confirmRidePopupPanelRef = useRef(null);
     const [ride, setRide] = useState(null);
 
     const { socket } = useContext(SocketContext);
     const { captain } = useContext(CaptainDataContext);
 
-    // Join room when captain logs in
+    // Emit join event and location updates only when captain is defined
     useEffect(() => {
-        if (captain?._id) {
-            console.log('Captain joining socket room:', captain._id);
-            socket.emit('join', {
-                userId: captain._id,
-                userType: 'captain'
-            });
-        }
-    }, [captain, socket]);
+        if (!captain || !captain._id) return;
 
-    // Update location
-    useEffect(() => {
+        socket.emit('join', {
+            userId: captain._id,
+            userType: 'captain'
+        });
+
         const updateLocation = () => {
-            if (navigator.geolocation && captain?._id) {
+            if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(position => {
                     socket.emit('update-location-captain', {
                         userId: captain._id,
@@ -53,88 +46,51 @@ const CaptainHome = () => {
             }
         };
 
-        const interval = setInterval(updateLocation, 10000); // update every 10s
-        updateLocation(); // initial call
-        return () => clearInterval(interval);
+        const locationInterval = setInterval(updateLocation, 10000);
+        updateLocation();
+
+        return () => clearInterval(locationInterval);
     }, [captain, socket]);
 
-    // Socket event listeners
+    // Listen for new ride event
     useEffect(() => {
-        if (!socket) {
-            console.warn('Socket not available for event listeners');
-            return;
-        }
-
         const handleNewRide = (data) => {
-            console.log('🚗 Received new ride notification:', data);
-            if (!data) {
-                console.error('Received empty ride data');
-                return;
-            }
-            // Handle incoming ride requests
             setRide(data);
             setRidePopupPanel(true);
-            console.log('✅ Ride popup panel opened');
         };
 
-        const handleError = (error) => {
-            console.error('Socket error:', error);
-        };
-
-        const handleConnect = () => {
-            console.log('✅ Socket connected successfully');
-        };
-
-        const handleDisconnect = () => {
-            console.warn('⚠️ Socket disconnected');
-        };
-
-        console.log('Setting up socket event listeners for captain');
         socket.on('new-ride', handleNewRide);
-        socket.on('error', handleError);
-        socket.on('connect', handleConnect);
-        socket.on('disconnect', handleDisconnect);
 
-        // Cleanup
         return () => {
-            console.log('Cleaning up socket event listeners');
             socket.off('new-ride', handleNewRide);
-            socket.off('error', handleError);
-            socket.off('connect', handleConnect);
-            socket.off('disconnect', handleDisconnect);
         };
     }, [socket]);
 
     async function confirmRide() {
-        // Function to confirm the ride
-        try {
-            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/confirm`, {
-                rideId: ride._id
-            }, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            setRidePopupPanel(false);
-            setConfirmRidePopupPanel(true);
-        } catch (error) {
-            console.error('Error confirming ride:', error);
-        }
+        if (!ride || !captain) return;
+
+        const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/confirm`, {
+            rideId: ride._id,
+            captainId: captain._id,
+        }, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+
+        setRidePopupPanel(false);
+        setConfirmRidePopupPanel(true);
     }
 
-    // Animation for ride popup
     useGSAP(() => {
         gsap.to(ridePopupPanelRef.current, {
-            transform: ridePopupPanel ? 'translateY(0%)' : 'translateY(100%)',
-            duration: 0.3
+            transform: ridePopupPanel ? 'translateY(0)' : 'translateY(100%)'
         });
     }, [ridePopupPanel]);
 
-    // Animation for confirm ride popup
     useGSAP(() => {
         gsap.to(confirmRidePopupPanelRef.current, {
-            transform: confirmRidePopupPanel ? 'translateY(0%)' : 'translateY(100%)',
-            duration: 0.3
+            transform: confirmRidePopupPanel ? 'translateY(0)' : 'translateY(100%)'
         });
     }, [confirmRidePopupPanel]);
 
@@ -154,13 +110,8 @@ const CaptainHome = () => {
 
             <div className='h-4/6'>
                 <LiveTracking />
-
-                {/* <img
-                    className="h-full w-full object-cover"
-                    src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
-                    alt="Map"
-                /> */}
             </div>
+
             <div className='h-2/6 p-6'>
                 <CaptainDetails />
             </div>

@@ -17,13 +17,12 @@ connectToDb();
 const app = express();
 
 // Middleware setup
-// app.use(
-//   cors({
-//     origin: process.env.FRONTEND_URL, // frontend URL
-//     credentials: true,
-//   })
-// );
-app.use(cors({ origin: "*" })); // Enable Cross-Origin Resource Sharing
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:5173", // frontend URL with fallback
+    credentials: true,
+  })
+);
 app.use(express.json()); // Parse JSON request bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded request bodies
 app.use(cookieParser()); // Parse Cookie header and populate req.cookies

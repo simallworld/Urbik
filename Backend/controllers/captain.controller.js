@@ -70,7 +70,15 @@ async function loginCaptain(req, res, next) {
   }
 
   const token = captain.generateAuthToken();
-  res.cookie("token", token);
+
+  // Set HTTP-only cookie with the token
+  // Cookie expires in 1 hour (3600000 milliseconds)
+  res.cookie("token", token, {
+    httpOnly: true, // Prevents JavaScript access to the cookie
+    secure: process.env.NODE_ENV === "production", // Only sends cookie over HTTPS in production
+    maxAge: 3600000, // 1 hour expiration
+  });
+
   res.status(200).json({ token, captain });
 }
 
@@ -82,7 +90,7 @@ async function loginCaptain(req, res, next) {
  * @returns {Object} JSON response with captain profile
  */
 async function getCaptainProfile(req, res, next) {
-  res.status(200).json({ captain: res.captain });
+  res.status(200).json({ captain: req.captain });
 }
 
 /**
@@ -133,17 +141,21 @@ async function updateLocation(req, res, next) {
     }
 
     const { lat, lng } = req.body;
-    const captainId = res.captain._id;
+    const captainId = req.captain._id;
 
-    const updatedCaptain = await captainService.updateCaptainLocation(captainId, lat, lng);
+    const updatedCaptain = await captainService.updateCaptainLocation(
+      captainId,
+      lat,
+      lng
+    );
 
     res.status(200).json({
       message: "Location updated successfully",
       captain: updatedCaptain,
-      location: { lat, lng }
+      location: { lat, lng },
     });
   } catch (error) {
-    console.error('Error updating captain location:', error);
+    console.error("Error updating captain location:", error);
     next(error);
   }
 }

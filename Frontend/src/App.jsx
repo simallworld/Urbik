@@ -28,10 +28,8 @@ function App() {
         <Route path="/" element={<SplashScreen />} />
         <Route path="/signup" element={<UserSignup />} />
         <Route path="/login" element={<UserLogin />} />
-        <Route path="/riding" element={<Riding />} />
         <Route path="/captain-signup" element={<CaptainSignup />} />
         <Route path="/captain-login" element={<CaptainLogin />} />
-        <Route path="/captain-riding" element={<CaptainRiding />} />
 
         {/* Protected routes for regular users */}
         <Route path="/home" element={
@@ -42,6 +40,13 @@ function App() {
 
         {/* Forbidden route for undefined paths */}
         <Route path="/*" element={<ForBidden />} />
+
+        {/* Protected logout route for user-riding */}
+        <Route path="/riding" element={
+          <UserProtectedRoute>
+            <Riding />
+          </UserProtectedRoute>
+        } />
 
         {/* Protected logout route for users */}
         <Route path="/user/logout" element={
@@ -54,6 +59,12 @@ function App() {
         <Route path="/captain-home" element={
           <CaptainProtectedRoute>
             <CaptainHome />
+          </CaptainProtectedRoute>} />
+
+        {/* Protected routes for captain-riding */}
+        <Route path="/captain-riding" element={
+          <CaptainProtectedRoute>
+            <CaptainRiding />
           </CaptainProtectedRoute>} />
 
         {/* Protected logout route for captains */}

@@ -59,13 +59,10 @@ async function getFare(pickup, destination) {
 
 //otp generation
 function getOtp(num) {
-  function generateOtp(num) {
-    const otp = crypto
-      .randomInt(Math.pow(10, num - 1), Math.pow(10, num))
-      .toString();
-    return otp;
-  }
-  return generateOtp(num);
+  const otp = crypto
+    .randomInt(Math.pow(10, num - 1), Math.pow(10, num))
+    .toString();
+  return otp;
 }
 
 const createRide = async ({ userId, pickup, destination, vehicleType }) => {
@@ -74,6 +71,11 @@ const createRide = async ({ userId, pickup, destination, vehicleType }) => {
   }
 
   const fare = await getFare(pickup, destination);
+
+  // Validate vehicleType exists in fare object
+  if (!fare[vehicleType]) {
+    throw new Error(`Invalid vehicle type: ${vehicleType}. Available types: ${Object.keys(fare).join(', ')}`);
+  }
 
   const ride = await rideModel.create({
     user: userId,
@@ -150,10 +152,14 @@ const startRide = async ({ rideId, otp, captain }) => {
     }
   );
 
-  sendMessageToSocketId(ride.user.socketId, {
-    event: "ride-started",
-    data: ride,
-  });
+  if (ride.user && ride.user.socketId) {
+    sendMessageToSocketId(ride.user.socketId, {
+      event: "ride-started",
+      data: ride,
+    });
+  } else {
+    console.warn('Cannot send ride-started notification: user socketId not available');
+  }
   return ride;
 };
 
