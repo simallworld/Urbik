@@ -17,11 +17,15 @@ connectToDb();
 const app = express();
 
 // Middleware setup
+// app.use(
+//   cors({
+//     origin: process.env.FRONTEND_URL || "http://localhost:5173", // frontend URL with fallback
+//     credentials: true,
+//   })
+// );
+
 app.use(
-  cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173", // frontend URL with fallback
-    credentials: true,
-  })
+  cors({origin: "*"})
 );
 app.use(express.json()); // Parse JSON request bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded request bodies
