@@ -5,7 +5,10 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-brightgreen.svg)](https://mongodb.com/)
 [![Socket.io](https://img.shields.io/badge/Socket.io-4.8.1-black.svg)](https://socket.io/)
 
-Hi, I’m _Shivam Swaroop_, a passionate Full-Stack Software Engineer with hands-on experience in building scalable, real-time applications. I have a strong foundation in the MERN stack, cloud integration and modern development practices. My work blends clean architecture, intuitive UI/UX, and high-performance backend systems.
+**DOCUMENTATION-** [Notion Doc](https://www.notion.so/Urbik-The-Ride-booking-Application-218ad40474bd80969b04c5ab34998656?source=copy_link)
+**DEPLOYMENT-** [Deployed on Vercel](https://urbik-one.vercel.app/)
+
+Hi, I’m **_Shivam Swaroop_**, a passionate Full-Stack Software Engineer with hands-on experience in building scalable, real-time applications. I have a strong foundation in the MERN stack, cloud integration and modern development practices. My work blends clean architecture, intuitive UI/UX, and high-performance backend systems.
 
 **Urbik** is my full-stack ride-sharing application built with the MERN stack designed to provide a seamless experience, featuring real-time communication, Google Maps integration, and comprehensive ride management for both passengers and drivers.
 
